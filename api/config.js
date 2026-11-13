@@ -4,7 +4,7 @@ export default function handler(req, res) {
   res.json({
     supabaseUrl: process.env.SUPABASE_URL || null,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY || null,
-    checkoutUrl: process.env.KORVEX_CHECKOUT_URL || null,
+    checkoutUrl: process.env.CHECKOUT_URL || 'https://go.perfectpay.com.br/PPU38CQHOCI',
     gratis: Number(process.env.AVALIACOES_GRATIS || 1),
     preco: process.env.PRECO_TEXTO || 'R$ 14,90'
   });
