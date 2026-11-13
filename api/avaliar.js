@@ -34,15 +34,20 @@ export default async function handler(req, res) {
   let texto = '';
   if (process.env.GEMINI_API_KEY) {
     // Google Gemini (tem plano grátis)
-    const modelo = process.env.AI_MODEL || 'gemini-2.5-flash';
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ inline_data: { mime_type: m[1], data: m[2] } }, { text: PROMPT }] }],
-        generationConfig: { responseMimeType: 'application/json', temperature: 0.3 }
-      })
-    });
+    const modelos = process.env.AI_MODEL ? [process.env.AI_MODEL] : ['gemini-2.5-flash', 'gemini-3.6-flash', 'gemini-flash-latest'];
+    let r = null;
+    for (const modelo of modelos) {
+      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ inline_data: { mime_type: m[1], data: m[2] } }, { text: PROMPT }] }],
+          generationConfig: { responseMimeType: 'application/json', temperature: 0.3 }
+        })
+      });
+      if (r.ok || ![404, 400].includes(r.status)) break;
+      console.error('IA modelo', modelo, r.status, await r.text());
+    }
     if (!r.ok) { console.error('IA', r.status, await r.text()); return json(res, r.status === 429 ? 429 : 502, { erro: 'ia' }); }
     const out = await r.json();
     texto = (out.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
