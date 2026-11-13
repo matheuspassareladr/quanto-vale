@@ -1,4 +1,8 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/app.", "destination": "/app", "permanent": false },
+    { "source": "/app/", "destination": "/app", "permanent": false }
+  ],
   "functions": { "api/avaliar.js": { "maxDuration": 60 } }
 }
