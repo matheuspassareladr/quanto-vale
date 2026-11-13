@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F6F5F1">
+<title>Quanto Vale? — App</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icone-192.png">
+<link rel="apple-touch-icon" href="/icone-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#F6F5F1;--ink:#121212;--mut:#5C5A54;--line:#E2DFD6;--acc:#D4F542;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+.app{max-width:440px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding:calc(20px + env(safe-area-inset-top)) 20px 110px}
+h1,h2,.gro{font-family:'Space Grotesk',sans-serif}
+h1{font-size:34px;line-height:1.05;margin:8px 0 0;letter-spacing:-.5px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:16px}
+.logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px}
+.logo span{color:#8AA300}
+.pill{background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;padding:8px 12px;border-radius:999px;white-space:nowrap;border:0;font-family:inherit}
+.view{display:none;flex-direction:column;gap:18px;flex:1}
+.view.on{display:flex}
+.shot{background:var(--ink);border-radius:28px;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#D9D7D0;position:relative;overflow:hidden}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:58px;border-radius:18px;border:0;font:700 17px Inter,sans-serif;cursor:pointer;width:100%;text-decoration:none;color:inherit}
+.btn.acc{background:var(--acc);color:var(--ink)}
+.btn.dark{background:var(--ink);color:var(--bg)}
+.btn.out{background:transparent;border:1px solid var(--ink);color:var(--ink);min-height:48px;font-size:15px;font-weight:600}
+.btn:disabled{opacity:.5}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:13px;padding:7px 12px;border:1px solid #CFCCC3;border-radius:999px}
+.mut{color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px 18px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.price{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;white-space:nowrap}
+.hero{background:var(--ink);color:var(--bg);border-radius:22px;padding:20px 18px}
+.hero .price{font-size:44px;letter-spacing:-1px}
+.tag{background:var(--acc);color:var(--ink);font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px}
+.steps{display:flex;flex-direction:column;gap:14px}
+.step{display:flex;gap:12px;align-items:center;font-weight:600}
+.dot{width:18px;height:18px;border-radius:999px;border:2.5px solid var(--ink);border-right-color:transparent;animation:sp 1s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.small{font-size:13px}
+.note{font-size:12px;color:var(--mut);line-height:1.4}
+.adbox{white-space:pre-wrap;line-height:1.5;font-size:15px}
+.lab{font-size:12px;font-weight:700;color:var(--mut);letter-spacing:.5px;margin-bottom:6px}
+.item{display:flex;gap:12px;align-items:center;cursor:pointer;width:100%;text-align:left;font:inherit;color:inherit}
+.thumb{width:54px;height:54px;border-radius:14px;background:#DCD9D0;object-fit:cover;flex:none}
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);display:flex;justify-content:center;gap:48px;padding:10px 0 calc(14px + env(safe-area-inset-bottom))}
+.nav button{background:none;border:0;font:600 12px Inter,sans-serif;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:4px;min-width:72px;min-height:44px;cursor:pointer}
+.nav button.on{color:var(--ink);font-weight:700}
+.err{background:#FDECEA;color:#7A1F12;border-radius:14px;padding:12px 14px;font-size:14px}
+.ok{background:#EEF8D0;color:#2E3A05;border-radius:14px;padding:12px 14px;font-size:14px}
+.icon{width:22px;height:22px}
+input[type=file]{display:none}
+label.campo{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px;font:500 16px Inter,sans-serif;background:#fff;color:var(--ink)}
+.link{background:none;border:0;padding:0;font:inherit;color:var(--ink);text-decoration:underline;cursor:pointer}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo">Quanto Vale<span>?</span></div>
+    <button class="pill hidden" id="saldo" type="button"></button>
+  </div>
+
+  <!-- CARREGANDO -->
+  <section class="view on" id="v-load"><div class="mut">Carregando...</div></section>
+
+  <!-- LOGIN -->
+  <section class="view" id="v-login">
+    <h1>Entre pra descobrir quanto vale.</h1>
+    <div class="mut">Use o <b>mesmo e-mail da compra</b> pra liberar seu acesso.</div>
+    <form id="fLogin" style="display:flex;flex-direction:column;gap:14px">
+      <label class="campo">E-mail<input class="txt" type="email" id="email" autocomplete="email" required></label>
+      <label class="campo">Senha<input class="txt" type="password" id="senha" autocomplete="current-password" minlength="6" required></label>
+      <button class="btn acc" type="submit" id="bEntrar">Entrar</button>
+      <button class="btn out" type="button" id="bCriar">Criar conta</button>
+    </form>
+    <div class="err hidden" id="errLogin"></div>
+    <div class="ok hidden" id="okLogin"></div>
+    <a class="small mut" href="/" style="text-align:center">Ainda não conhece? Ver como funciona</a>
+  </section>
+
+  <!-- INÍCIO -->
+  <section class="view" id="v-inicio">
+    <h1>Tira foto.<br>Descobre quanto vale.</h1>
+    <div class="shot">
+      <svg class="icon" style="width:48px;height:48px" viewBox="0 0 24 24" fill="none" stroke="#D9D7D0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      <div>Aponte para o objeto</div>
+    </div>
+    <div class="chips"><span class="chip">Celular</span><span class="chip">Tênis</span><span class="chip">Peça de moto</span><span class="chip">Eletrônico</span><span class="chip">Qualquer coisa</span></div>
+    <label class="btn acc" for="cam">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      Tirar foto
+    </label>
+    <input type="file" id="cam" accept="image/*" capture="environment">
+    <label class="btn out" for="gal">Escolher da galeria</label>
+    <input type="file" id="gal" accept="image/*">
+    <div class="err hidden" id="errInicio"></div>
+  </section>
+
+  <!-- ANALISANDO -->
+  <section class="view" id="v-analise">
+    <div class="shot" style="min-height:260px"><img id="prevImg" alt="Foto do objeto"></div>
+    <h2 style="margin:0;font-size:28px">Analisando...</h2>
+    <div class="steps">
+      <div class="step"><div class="dot"></div>Identificando o objeto e o estado</div>
+      <div class="step mut">Calculando os 3 preços de usado</div>
+      <div class="step mut">Escrevendo o anúncio</div>
+    </div>
+  </section>
+
+  <!-- RESULTADO -->
+  <section class="view" id="v-res">
+    <div class="row">
+      <button class="btn out" style="width:auto;padding:0 16px" id="btnVoltar" type="button">← Nova foto</button>
+      <button class="btn dark" style="width:auto;padding:0 18px;min-height:48px;font-size:15px" id="btnSalvar" type="button">Salvar</button>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center">
+      <img class="thumb" id="resThumb" alt="" style="width:72px;height:72px;border-radius:18px">
+      <div>
+        <div class="gro" style="font-weight:700;font-size:22px" id="resNome"></div>
+        <div class="small mut" id="resEstado"></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card row"><div><div style="font-weight:600">Vende rápido</div><div class="small mut">sai em poucos dias</div></div><div class="price" id="pRap"></div></div>
+      <div class="hero"><div class="row"><div style="font-weight:600">Preço justo</div><span class="tag">MAIS COMUM</span></div><div class="price" id="pJus"></div></div>
+      <div class="card row"><div><div style="font-weight:600">Preço máximo</div><div class="small mut">se tiver paciência</div></div><div class="price" id="pMax"></div></div>
+    </div>
+    <div class="small mut" id="resMotivo"></div>
+    <button class="btn acc" id="btnAnuncio" type="button">Gerar anúncio pronto</button>
+    <div class="note">Os preços são uma estimativa feita por inteligência artificial a partir da foto. Confira anúncios parecidos antes de fechar negócio.</div>
+  </section>
+
+  <!-- ANÚNCIO -->
+  <section class="view" id="v-anuncio">
+    <button class="btn out" style="width:auto;padding:0 16px;align-self:flex-start" id="btnVoltaRes" type="button">← Voltar</button>
+    <h2 style="margin:0;font-size:26px">Anúncio pronto</h2>
+    <div class="mut">Imagem + texto prontos pra postar.</div>
+    <img id="adImg" alt="Arte do anúncio com foto, título e preço" style="width:100%;border-radius:20px;background:#121212;aspect-ratio:4/5;object-fit:cover">
+    <button class="btn dark" id="btnBaixarArte" type="button">Salvar imagem</button>
+    <div class="card">
+      <div class="lab">TEXTO DO ANÚNCIO</div>
+      <div class="adbox" id="adText"></div>
+    </div>
+    <button class="btn acc" id="btnCompartilhar" type="button">Compartilhar</button>
+    <button class="btn out" id="btnCopiar" type="button">Copiar texto</button>
+    <div class="small mut" id="copyMsg"></div>
+    <a class="btn out" id="lnkZap" href="https://wa.me/" target="_blank" rel="noopener">Enviar no WhatsApp</a>
+    <a class="btn out" href="https://www.facebook.com/marketplace/create/item" target="_blank" rel="noopener">Abrir o Marketplace</a>
+    <a class="btn out" href="https://www.olx.com.br/" target="_blank" rel="noopener">Abrir a OLX</a>
+  </section>
+
+  <!-- PAYWALL -->
+  <section class="view" id="v-pay">
+    <h2 style="margin:0;font-size:30px;line-height:1.1">Sua avaliação grátis acabou.</h2>
+    <div class="mut">Assine e avalie quantas coisas quiser, com anúncio pronto e itens salvos.</div>
+    <div class="hero">
+      <span class="tag">ILIMITADO</span>
+      <div class="price" style="margin-top:10px" id="precoTxt">R$ 14,90/mês</div>
+      <div class="small" style="color:#D9D7D0;margin-top:6px">Avaliações ilimitadas · anúncio com imagem · itens salvos</div>
+    </div>
+    <a class="btn acc" id="btnAssinar" href="#" target="_blank" rel="noopener">Assinar agora</a>
+    <button class="btn out" id="btnJaPaguei" type="button">Já paguei, liberar meu acesso</button>
+    <div class="note" id="payNota">Pague com o mesmo e-mail desta conta: <b id="payEmail"></b>. O acesso libera sozinho em até 1 minuto depois da confirmação.</div>
+    <div class="err hidden" id="errPay"></div>
+  </section>
+
+  <!-- SALVOS -->
+  <section class="view" id="v-salvos">
+    <div class="row"><h2 style="margin:0;font-size:26px">Meus itens</h2><div class="small mut" id="qtdSalvos"></div></div>
+    <div class="hero">
+      <div class="small" style="color:#D9D7D0">Suas coisas valem, no preço justo</div>
+      <div class="price" id="totalSalvos">R$ 0</div>
+      <div class="small" style="color:var(--acc)">Soma de tudo que você salvou</div>
+    </div>
+    <div id="listaSalvos" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div class="mut" id="vazio">Nada salvo ainda. Avalie algo e toque em "Salvar".</div>
+    <button class="link small mut" id="btnSair" type="button" style="align-self:center;margin-top:12px">Sair da conta</button>
+  </section>
+</div>
+
+<nav class="nav hidden" id="nav">
+  <button id="navAval" class="on" type="button"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Avaliar</button>
+  <button id="navSalvos" type="button"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>Meus itens</button>
+</nav>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const brl = (n) => 'R$ ' + Math.round(Number(n) || 0).toLocaleString('pt-BR');
+let sb = null, cfg = {}, sessao = null, me = null;
+let atual = null, salvos = [], fotoThumb = null, fotoArte = null, fotoDataUrl = null, arteBlob = null;
+
+function mostrar(v) {
+  document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === v));
+  const logado = !!sessao && !['v-login', 'v-load'].includes(v);
+  $('nav').classList.toggle('hidden', !logado);
+  $('saldo').classList.toggle('hidden', !logado);
+  $('navAval').classList.toggle('on', v !== 'v-salvos');
+  $('navSalvos').classList.toggle('on', v === 'v-salvos');
+  window.scrollTo(0, 0);
+}
+function erro(id, msg) { const e = $(id); e.textContent = msg; e.classList.toggle('hidden', !msg); }
+
+async function api(caminho, corpo) {
+  const r = await fetch(caminho, {
+    method: corpo ? 'POST' : 'GET',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (sessao?.access_token || '') },
+    body: corpo ? JSON.stringify(corpo) : undefined
+  });
+  let d = {}; try { d = await r.json(); } catch (e) {}
+  return { status: r.status, d };
+}
+
+async function atualizaMe() {
+  const { status, d } = await api('/api/me');
+  if (status !== 200) return;
+  me = d;
+  $('saldo').textContent = me.pago ? 'Assinante' : (me.restantesGratis + ' grátis');
+  $('payEmail').textContent = me.email;
+}
+
+async function iniciar() {
+  try { cfg = await (await fetch('/api/config')).json(); } catch (e) {}
+  if (!cfg.supabaseUrl || !window.supabase) { $('v-load').innerHTML = '<div class="err">O app ainda está sendo configurado. Volte em alguns minutos.</div>'; return; }
+  sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  $('btnAssinar').href = cfg.checkoutUrl || '/';
+  $('precoTxt').textContent = cfg.preco || 'R$ 14,90/mês';
+  const { data } = await sb.auth.getSession();
+  sessao = data.session;
+  sb.auth.onAuthStateChange((_e, s) => { sessao = s; });
+  if (sessao) { await entrouNoApp(); } else mostrar('v-login');
+}
+async function entrouNoApp() {
+  await atualizaMe();
+  carregaSalvos();
+  mostrar('v-inicio');
+}
+
+// ---------- login ----------
+$('fLogin').addEventListener('submit', async (ev) => {
+  ev.preventDefault(); erro('errLogin', ''); $('okLogin').classList.add('hidden');
+  $('bEntrar').disabled = true;
+  const { data, error } = await sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('senha').value });
+  $('bEntrar').disabled = false;
+  if (error) return erro('errLogin', 'E-mail ou senha errados. Se ainda não tem conta, toque em "Criar conta".');
+  sessao = data.session; entrouNoApp();
+});
+$('bCriar').onclick = async () => {
+  erro('errLogin', ''); $('okLogin').classList.add('hidden');
+  const email = $('email').value.trim(), senha = $('senha').value;
+  if (!email || senha.length < 6) return erro('errLogin', 'Coloque seu e-mail e uma senha de pelo menos 6 caracteres.');
+  $('bCriar').disabled = true;
+  const { data, error } = await sb.auth.signUp({ email, password: senha });
+  $('bCriar').disabled = false;
+  if (error) return erro('errLogin', /registered|already/i.test(error.message) ? 'Esse e-mail já tem conta. Toque em "Entrar".' : 'Não deu pra criar a conta: ' + error.message);
+  if (data.session) { sessao = data.session; entrouNoApp(); }
+  else { const ok = $('okLogin'); ok.textContent = 'Conta criada! Confira seu e-mail pra confirmar e depois toque em "Entrar".'; ok.classList.remove('hidden'); }
+};
+$('btnSair').onclick = async () => { await sb.auth.signOut(); sessao = null; salvos = []; mostrar('v-login'); };
+
+// ---------- foto ----------
+function carregaImagem(file) { return new Promise((ok, falha) => { const img = new Image(); img.onload = () => ok(img); img.onerror = falha; img.src = URL.createObjectURL(file); }); }
+function redimensiona(img, max) {
+  const s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); return c;
+}
+async function aoEscolher(ev) {
+  const f = ev.target.files && ev.target.files[0]; ev.target.value = '';
+  if (!f) return; erro('errInicio', '');
+  try {
+    const img = await carregaImagem(f);
+    fotoDataUrl = redimensiona(img, 1024).toDataURL('image/jpeg', .82);
+    fotoThumb = redimensiona(img, 400).toDataURL('image/jpeg', .7);
+    fotoArte = redimensiona(img, 1080);
+    $('prevImg').src = fotoThumb;
+    mostrar('v-analise');
+    await analisa();
+  } catch (e) { mostrar('v-inicio'); erro('errInicio', 'Não consegui ler essa foto. Tenta outra.'); }
+}
+$('cam').addEventListener('change', aoEscolher);
+$('gal').addEventListener('change', aoEscolher);
+
+async function analisa() {
+  const { status, d } = await api('/api/avaliar', { imagem: fotoDataUrl });
+  if (status === 200) {
+    atual = Object.assign({ thumb: fotoThumb }, d);
+    renderResultado(); mostrar('v-res'); atualizaMe(); return;
+  }
+  if (status === 402) { await atualizaMe(); mostrar('v-pay'); return; }
+  if (status === 401) { sessao = null; mostrar('v-login'); return; }
+  mostrar('v-inicio');
+  erro('errInicio', status === 422 ? 'Não reconheci um objeto nessa foto. Tenta mais de perto e com boa luz.'
+    : status === 429 ? 'Você chegou no limite de avaliações de hoje. Volta amanhã!'
+    : 'Deu erro na avaliação. Tenta de novo em instantes.');
+}
+
+function renderResultado() {
+  const a = atual;
+  $('resThumb').src = a.thumb || '';
+  $('resNome').textContent = a.objeto;
+  $('resEstado').textContent = a.estado || '';
+  $('pRap').textContent = brl(a.rapido); $('pJus').textContent = brl(a.justo); $('pMax').textContent = brl(a.maximo);
+  $('resMotivo').textContent = (a.motivo || '') + (a.confianca ? ' · confiança ' + a.confianca : '');
+  $('btnSalvar').disabled = !!a.id;
+  $('btnSalvar').textContent = a.id ? 'Salvo ✓' : 'Salvar';
+}
+$('btnVoltar').onclick = () => mostrar('v-inicio');
+$('btnVoltaRes').onclick = () => mostrar('v-res');
+
+// ---------- paywall ----------
+$('btnJaPaguei').onclick = async () => {
+  erro('errPay', ''); await atualizaMe();
+  if (me && me.pago) { mostrar('v-inicio'); }
+  else erro('errPay', 'Ainda não encontramos o pagamento pra ' + (me?.email || 'este e-mail') + '. Se acabou de pagar, espera 1 minuto e tenta de novo.');
+};
+
+// ---------- salvos ----------
+async function carregaSalvos() {
+  const { data } = await sb.from('itens').select('*').order('criado_em', { ascending: false }).limit(200);
+  salvos = data || []; renderSalvos();
+}
+$('btnSalvar').onclick = async () => {
+  if (!atual || atual.id) return;
+  $('btnSalvar').disabled = true;
+  const { data, error } = await sb.from('itens').insert({
+    objeto: atual.objeto, estado: atual.estado, rapido: Math.round(atual.rapido) || 0, justo: Math.round(atual.justo) || 0, maximo: Math.round(atual.maximo) || 0,
+    motivo: atual.motivo, confianca: atual.confianca, titulo: atual.titulo, descricao: atual.descricao, thumb: atual.thumb
+  }).select().single();
+  if (error) { $('btnSalvar').disabled = false; $('btnSalvar').textContent = 'Erro, tenta de novo'; return; }
+  atual.id = data.id; salvos.unshift(data); renderSalvos(); renderResultado();
+};
+function renderSalvos() {
+  const lista = $('listaSalvos'); lista.textContent = ''; let total = 0;
+  salvos.forEach(it => {
+    total += Number(it.justo) || 0;
+    const b = document.createElement('button'); b.className = 'card item'; b.type = 'button';
+    const im = document.createElement('img'); im.className = 'thumb'; im.alt = ''; if (it.thumb) im.src = it.thumb;
+    const meio = document.createElement('div'); meio.style.flex = '1';
+    const n = document.createElement('div'); n.style.fontWeight = '600'; n.textContent = it.objeto;
+    const d = document.createElement('div'); d.className = 'small mut'; d.textContent = new Date(it.criado_em).toLocaleDateString('pt-BR');
+    meio.append(n, d);
+    const p = document.createElement('div'); p.className = 'price'; p.style.fontSize = '18px'; p.textContent = brl(it.justo);
+    b.append(im, meio, p);
+    b.onclick = () => { atual = Object.assign({}, it); renderResultado(); mostrar('v-res'); };
+    lista.append(b);
+  });
+  $('totalSalvos').textContent = brl(total);
+  $('qtdSalvos').textContent = salvos.length + (salvos.length === 1 ? ' salvo' : ' salvos');
+  $('vazio').classList.toggle('hidden', salvos.length > 0);
+}
+$('navAval').onclick = () => mostrar('v-inicio');
+$('navSalvos').onclick = () => { renderSalvos(); mostrar('v-salvos'); };
+
+// ---------- anúncio ----------
+$('btnAnuncio').onclick = async () => {
+  const texto = (atual.titulo || atual.objeto) + '\n\n' + brl(atual.justo) + '\n\n' + (atual.descricao || '');
+  $('adText').textContent = texto;
+  $('lnkZap').href = 'https://wa.me/?text=' + encodeURIComponent(texto);
+  $('copyMsg').textContent = '';
+  $('adImg').removeAttribute('src');
+  mostrar('v-anuncio');
+  try { const url = await geraArte(atual); $('adImg').src = url; arteBlob = await (await fetch(url)).blob(); } catch (e) { arteBlob = null; }
+};
+$('btnCopiar').onclick = async () => {
+  try { await navigator.clipboard.writeText($('adText').textContent); $('copyMsg').textContent = 'Copiado! Agora é só colar.'; }
+  catch (e) { $('copyMsg').textContent = 'Segure o dedo no texto pra copiar.'; }
+};
+$('btnBaixarArte').onclick = () => {
+  if (!$('adImg').src) return;
+  const a = document.createElement('a'); a.href = $('adImg').src; a.download = 'anuncio-quanto-vale.jpg'; document.body.append(a); a.click(); a.remove();
+};
+$('btnCompartilhar').onclick = async () => {
+  const texto = $('adText').textContent;
+  try {
+    const arq = arteBlob ? new File([arteBlob], 'anuncio.jpg', { type: 'image/jpeg' }) : null;
+    if (arq && navigator.canShare && navigator.canShare({ files: [arq] })) await navigator.share({ files: [arq], text: texto });
+    else if (navigator.share) await navigator.share({ text: texto });
+    else { await navigator.clipboard.writeText(texto); $('copyMsg').textContent = 'Texto copiado. Salve a imagem e poste onde quiser.'; }
+  } catch (e) {}
+};
+
+function quebra(ctx, txt, maxW, maxLinhas) {
+  const pal = String(txt).split(/\s+/); const linhas = []; let l = '';
+  for (const p of pal) { const t = l ? l + ' ' + p : p; if (ctx.measureText(t).width > maxW && l) { linhas.push(l); l = p; } else l = t; }
+  if (l) linhas.push(l);
+  if (linhas.length > maxLinhas) { linhas.length = maxLinhas; linhas[maxLinhas - 1] += '…'; }
+  return linhas;
+}
+function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+async function fonteDaFoto(a) {
+  if (fotoArte && a.thumb === fotoThumb) return fotoArte;
+  return await new Promise((ok, falha) => { const i = new Image(); i.onload = () => ok(i); i.onerror = falha; i.src = a.thumb; });
+}
+async function geraArte(a) {
+  try { await Promise.all([document.fonts.load('700 80px "Space Grotesk"'), document.fonts.load('600 40px Inter')]); } catch (e) {}
+  const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  x.fillStyle = '#121212'; x.fillRect(0, 0, W, H);
+  const fx = 60, fy = 60, fw = W - 120, fh = 760;
+  x.save(); rr(x, fx, fy, fw, fh, 48); x.clip(); x.fillStyle = '#2A2A28'; x.fillRect(fx, fy, fw, fh);
+  try { const src = await fonteDaFoto(a); const sw = src.width || src.naturalWidth, sh = src.height || src.naturalHeight;
+    const s = Math.max(fw / sw, fh / sh), dw = sw * s, dh = sh * s; x.drawImage(src, fx + (fw - dw) / 2, fy + (fh - dh) / 2, dw, dh); } catch (e) {}
+  x.restore();
+  x.fillStyle = '#D4F542'; rr(x, 96, 96, 230, 64, 32); x.fill();
+  x.fillStyle = '#121212'; x.font = '700 30px Inter, sans-serif'; x.textBaseline = 'middle'; x.fillText('À VENDA', 140, 129);
+  x.textBaseline = 'alphabetic'; x.fillStyle = '#F6F5F1'; x.font = '700 64px "Space Grotesk", sans-serif';
+  const tl = quebra(x, a.titulo || a.objeto, W - 120, 2); tl.forEach((l, i) => x.fillText(l, 60, 910 + i * 74));
+  const y = 910 + (tl.length - 1) * 74 + 56;
+  x.fillStyle = '#B5B2A8'; x.font = '500 34px Inter, sans-serif'; x.fillText(quebra(x, a.estado || 'Usado', W - 120, 1)[0], 60, y);
+  x.fillStyle = '#D4F542'; x.font = '700 150px "Space Grotesk", sans-serif'; x.fillText(brl(a.justo), 56, Math.min(y + 170, 1230));
+  x.fillStyle = '#5C5A54'; x.fillRect(60, 1262, W - 120, 2);
+  x.fillStyle = '#B5B2A8'; x.font = '500 30px Inter, sans-serif'; x.fillText('avaliado no', 60, 1310);
+  x.fillStyle = '#F6F5F1'; x.font = '700 34px "Space Grotesk", sans-serif'; x.fillText('Quanto Vale?', 230, 1311);
+  return c.toDataURL('image/jpeg', .9);
+}
+
+iniciar();
+</script>
+</body>
+</html>
