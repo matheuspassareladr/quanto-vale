@@ -27,10 +27,8 @@ export default async function handler(req, res) {
   const agora = Date.now();
   let registro;
   if (pago) {
-    const { data: atual } = await db.from('acessos').select('expira_em, status').eq('email', email).maybeSingle();
-    const base = atual?.status === 'ativo' && atual.expira_em ? Math.max(agora, new Date(atual.expira_em).getTime()) : agora;
-    const dias = Number(process.env.DIAS_POR_PAGAMENTO || 30);
-    registro = { email, status: 'ativo', plano: '30 dias', expira_em: new Date(base + dias * 864e5).toISOString(), atualizado_em: new Date().toISOString(), origem: { evento } };
+    const dias = Number(process.env.DIAS_POR_PAGAMENTO || 0); // 0 = acesso vitalício
+    registro = { email, status: 'ativo', plano: dias ? dias + ' dias' : 'vitalicio', expira_em: dias ? new Date(agora + dias * 864e5).toISOString() : null, atualizado_em: new Date().toISOString(), origem: { evento } };
   } else {
     registro = { email, status: 'inativo', atualizado_em: new Date().toISOString(), origem: { evento } };
   }
