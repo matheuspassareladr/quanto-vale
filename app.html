@@ -161,13 +161,13 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
   <!-- PAYWALL -->
   <section class="view" id="v-pay">
     <h2 style="margin:0;font-size:30px;line-height:1.1">Sua avaliação grátis acabou.</h2>
-    <div class="mut">Assine e avalie quantas coisas quiser, com anúncio pronto e itens salvos.</div>
+    <div class="mut">Libere 30 dias e avalie quantas coisas quiser, com anúncio pronto e itens salvos.</div>
     <div class="hero">
-      <span class="tag">ILIMITADO</span>
-      <div class="price" style="margin-top:10px" id="precoTxt">R$ 14,90/mês</div>
-      <div class="small" style="color:#D9D7D0;margin-top:6px">Avaliações ilimitadas · anúncio com imagem · itens salvos</div>
+      <span class="tag">30 DIAS ILIMITADO</span>
+      <div class="price" style="margin-top:10px" id="precoTxt">R$ 14,90</div>
+      <div class="small" style="color:#D9D7D0;margin-top:6px">Por 30 dias, sem assinatura · avaliações ilimitadas · anúncio com imagem · itens salvos</div>
     </div>
-    <a class="btn acc" id="btnAssinar" href="#" target="_blank" rel="noopener">Assinar agora</a>
+    <a class="btn acc" id="btnAssinar" href="#" target="_blank" rel="noopener">Liberar 30 dias</a>
     <button class="btn out" id="btnJaPaguei" type="button">Já paguei, liberar meu acesso</button>
     <div class="note" id="payNota">Pague com o mesmo e-mail desta conta: <b id="payEmail"></b>. O acesso libera sozinho em até 1 minuto depois da confirmação.</div>
     <div class="err hidden" id="errPay"></div>
@@ -223,7 +223,7 @@ async function atualizaMe() {
   const { status, d } = await api('/api/me');
   if (status !== 200) return;
   me = d;
-  $('saldo').textContent = me.pago ? 'Assinante' : (me.restantesGratis + ' grátis');
+  $('saldo').textContent = me.pago ? 'Liberado' : (me.restantesGratis + ' grátis');
   $('payEmail').textContent = me.email;
 }
 
@@ -232,7 +232,7 @@ async function iniciar() {
   if (!cfg.supabaseUrl || !window.supabase) { $('v-load').innerHTML = '<div class="err">O app ainda está sendo configurado. Volte em alguns minutos.</div>'; return; }
   sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
   $('btnAssinar').href = cfg.checkoutUrl || '/';
-  $('precoTxt').textContent = cfg.preco || 'R$ 14,90/mês';
+  
   const { data } = await sb.auth.getSession();
   sessao = data.session;
   sb.auth.onAuthStateChange((_e, s) => { sessao = s; });
