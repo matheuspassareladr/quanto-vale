@@ -31,28 +31,39 @@ export default async function handler(req, res) {
   const m = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(img);
   if (!m || m[2].length > 5_500_000) return json(res, 400, { erro: 'imagem' });
 
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: process.env.AI_MODEL || 'claude-haiku-5-5',
-      max_tokens: 900,
-      messages: [{ role: 'user', content: [
-        { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } },
-        { type: 'text', text: PROMPT }
-      ] }]
-    })
-  });
-  if (!r.ok) {
-    console.error('IA', r.status, await r.text());
-    return json(res, 502, { erro: 'ia' });
+  let texto = '';
+  if (process.env.GEMINI_API_KEY) {
+    // Google Gemini (tem plano grátis)
+    const modelo = process.env.AI_MODEL || 'gemini-2.5-flash';
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ inline_data: { mime_type: m[1], data: m[2] } }, { text: PROMPT }] }],
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.3 }
+      })
+    });
+    if (!r.ok) { console.error('IA', r.status, await r.text()); return json(res, r.status === 429 ? 429 : 502, { erro: 'ia' }); }
+    const out = await r.json();
+    texto = (out.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+  } else {
+    // Anthropic (Claude)
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        model: process.env.AI_MODEL || 'claude-haiku-5-5',
+        max_tokens: 900,
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } },
+          { type: 'text', text: PROMPT }
+        ] }]
+      })
+    });
+    if (!r.ok) { console.error('IA', r.status, await r.text()); return json(res, 502, { erro: 'ia' }); }
+    const out = await r.json();
+    texto = (out.content || []).map(c => c.text || '').join('');
   }
-  const out = await r.json();
-  const texto = (out.content || []).map(c => c.text || '').join('');
   let dado;
   try { dado = JSON.parse(texto.slice(texto.indexOf('{'), texto.lastIndexOf('}') + 1)); }
   catch { return json(res, 502, { erro: 'formato' }); }
