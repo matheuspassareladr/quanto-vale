@@ -1,4 +1,4 @@
-import { admin, json } from './_lib.js';
+import { admin, temAcesso, regrasIndicacao, json } from './_lib.js';
 
 // Aviso de venda da Perfect Pay (Ferramentas > Webhook - Vendas, formato PerfectPay).
 // Validação: o campo "token" do corpo tem que ser igual ao PERFECTPAY_TOKEN (Public token da Perfect).
@@ -26,5 +26,17 @@ export default async function handler(req, res) {
 
   const { error } = await db.from('acessos').upsert(registro, { onConflict: 'email' });
   if (error) { console.error(error); return json(res, 500, { erro: 'db' }); }
+  try { await premiaIndicacao(db, email, status === 2); } catch (e) { console.error('indicacao', e); }
   return json(res, 200, { ok: true, email, status: registro.status });
+}
+
+// Amigo indicado comprou: marca e, se quem indicou bateu a meta, libera o vitalício dele de graça.
+async function premiaIndicacao(db, email, aprovado) {
+  const { data: ind } = await db.from('indicacoes').update({ pagou: aprovado }).eq('indicado_email', email).select('indicador_id').maybeSingle();
+  if (!ind || !aprovado) return;
+  const { count } = await db.from('indicacoes').select('indicado_id', { count: 'exact', head: true }).eq('indicador_id', ind.indicador_id).eq('pagou', true);
+  if ((count || 0) < regrasIndicacao().metaVitalicio) return;
+  const { data: perfil } = await db.from('perfis').select('email').eq('user_id', ind.indicador_id).maybeSingle();
+  if (!perfil?.email || await temAcesso(perfil.email)) return;
+  await db.from('acessos').upsert({ email: perfil.email, status: 'ativo', plano: 'vitalicio', expira_em: null, atualizado_em: new Date().toISOString(), origem: { gateway: 'indicacao', amigos: count } }, { onConflict: 'email' });
 }

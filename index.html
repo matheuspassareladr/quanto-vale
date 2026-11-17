@@ -108,6 +108,7 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center;bor
 
   <footer>Quanto Vale? · Tira foto. Descobre quanto vale.</footer>
 </div>
+<script>try{const r=new URLSearchParams(location.search).get('ref');if(r)localStorage.setItem('qv_ref',r.toUpperCase());}catch(e){}</script>
 <script>
 fetch('/api/config').then(r => r.json()).then(c => {
   if (c.preco) document.querySelectorAll('.preco-txt').forEach(e => e.textContent = c.preco);

@@ -1,4 +1,4 @@
-import { admin, usuarioDoPedido, temAcesso, usoTotal, json } from './_lib.js';
+import { admin, usuarioDoPedido, temAcesso, usoTotal, gratisDe, json } from './_lib.js';
 
 
 const PROMPT = `Você é um avaliador experiente de produtos USADOS no Brasil (OLX, Mercado Livre usados, Facebook Marketplace, Enjoei).
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
   const pago = await temAcesso(user.email);
   if (!pago) {
-    const gratis = Number(process.env.AVALIACOES_GRATIS || 1);
+    const gratis = await gratisDe(user.id);
     if ((await usoTotal(user.id)) >= gratis) return json(res, 402, { erro: 'pagar' });
   }
 
@@ -75,5 +75,7 @@ export default async function handler(req, res) {
   if (!dado.objeto) return json(res, 422, { erro: 'nao_reconheci' });
 
   await db.rpc('somar_uso', { p_user: user.id });
+  // Se chegou por indicação, conta como amigo que usou (dá o bônus pra quem indicou)
+  try { await db.from('indicacoes').update({ usou: true }).eq('indicado_id', user.id).eq('usou', false); } catch {}
   return json(res, 200, { ...dado, pago });
 }

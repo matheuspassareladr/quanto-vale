@@ -26,6 +26,27 @@ export async function usoTotal(userId) {
   return (data || []).reduce((s, r) => s + (r.n || 0), 0);
 }
 
+// ---------- Indique e ganhe ----------
+export const regrasIndicacao = () => ({
+  bonusPorAmigo: Number(process.env.BONUS_POR_AMIGO || 3),       // avaliações grátis pra quem indica, por amigo que usar
+  bonusIndicado: Number(process.env.BONUS_INDICADO || 1),        // avaliação extra pra quem chega pelo link
+  metaVitalicio: Number(process.env.AMIGOS_PRA_VITALICIO || 2)   // amigos que compram = vitalício grátis
+});
+
+// Quantas avaliações grátis a pessoa tem no total (base + bônus de indicação)
+export async function gratisDe(userId) {
+  const base = Number(process.env.AVALIACOES_GRATIS || 1);
+  try {
+    const db = admin(), r = regrasIndicacao();
+    const [{ count, error }, { data: veio }] = await Promise.all([
+      db.from('indicacoes').select('indicado_id', { count: 'exact', head: true }).eq('indicador_id', userId).eq('usou', true),
+      db.from('indicacoes').select('indicado_id').eq('indicado_id', userId).maybeSingle()
+    ]);
+    if (error) return base;
+    return base + (count || 0) * r.bonusPorAmigo + (veio ? r.bonusIndicado : 0);
+  } catch { return base; }
+}
+
 export function json(res, status, corpo) {
   res.status(status).setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-store');

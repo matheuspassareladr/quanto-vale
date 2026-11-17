@@ -49,7 +49,7 @@ h1{font-size:34px;line-height:1.05;margin:8px 0 0;letter-spacing:-.5px}
 .lab{font-size:12px;font-weight:700;color:var(--mut);letter-spacing:.5px;margin-bottom:6px}
 .item{display:flex;gap:12px;align-items:center;cursor:pointer;width:100%;text-align:left;font:inherit;color:inherit}
 .thumb{width:54px;height:54px;border-radius:14px;background:#DCD9D0;object-fit:cover;flex:none}
-.nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);display:flex;justify-content:center;gap:48px;padding:10px 0 calc(14px + env(safe-area-inset-bottom))}
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);display:flex;justify-content:center;gap:20px;padding:10px 0 calc(14px + env(safe-area-inset-bottom))}
 .nav button{background:none;border:0;font:600 12px Inter,sans-serif;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:4px;min-width:72px;min-height:44px;cursor:pointer}
 .nav button.on{color:var(--ink);font-weight:700}
 .err{background:#FDECEA;color:#7A1F12;border-radius:14px;padding:12px 14px;font-size:14px}
@@ -60,6 +60,13 @@ label.campo{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weigh
 input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px;font:500 16px Inter,sans-serif;background:#fff;color:var(--ink)}
 .link{background:none;border:0;padding:0;font:inherit;color:var(--ink);text-decoration:underline;cursor:pointer}
 .hidden{display:none!important}
+.chute{display:flex;gap:10px}
+.chute input{flex:1;min-width:0}
+.chute .btn{width:auto;padding:0 18px;min-height:52px;font-size:15px}
+.veredito{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;line-height:1.15}
+.linkbox{font:600 15px Inter,sans-serif;word-break:break-all;background:#fff;border:1px dashed #B8B5AB;border-radius:14px;padding:12px 14px}
+.barra{height:10px;background:#E2DFD6;border-radius:999px;overflow:hidden}
+.barra div{height:100%;background:var(--acc);border-radius:999px;transition:width .4s}
 </style>
 </head>
 <body>
@@ -108,11 +115,21 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
   <!-- ANALISANDO -->
   <section class="view" id="v-analise">
     <div class="shot" style="min-height:260px"><img id="prevImg" alt="Foto do objeto"></div>
-    <h2 style="margin:0;font-size:28px">Analisando...</h2>
+    <h2 style="margin:0;font-size:28px" id="tAnalise">Analisando...</h2>
     <div class="steps">
       <div class="step"><div class="dot"></div>Identificando o objeto e o estado</div>
       <div class="step mut">Calculando os 3 preços de usado</div>
       <div class="step mut">Escrevendo o anúncio</div>
+    </div>
+    <div class="card" id="chuteBox">
+      <div class="lab">ENQUANTO A IA PENSA…</div>
+      <div style="font-weight:700;font-size:18px;margin-bottom:10px">Quanto você acha que vale?</div>
+      <form class="chute" id="fChute">
+        <input class="txt" type="number" inputmode="numeric" min="1" step="1" id="chute" placeholder="Seu chute em R$">
+        <button class="btn acc" type="submit" id="bChute">Cravar</button>
+      </form>
+      <div class="small mut" id="chuteMsg" style="margin-top:8px"></div>
+      <button class="link small mut" type="button" id="bPular" style="margin-top:8px">Pular e ver o resultado</button>
     </div>
   </section>
 
@@ -133,6 +150,11 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
       <div class="card row"><div><div style="font-weight:600">Vende rápido</div><div class="small mut">sai em poucos dias</div></div><div class="price" id="pRap"></div></div>
       <div class="hero"><div class="row"><div style="font-weight:600">Preço justo</div><span class="tag">MAIS COMUM</span></div><div class="price" id="pJus"></div></div>
       <div class="card row"><div><div style="font-weight:600">Preço máximo</div><div class="small mut">se tiver paciência</div></div><div class="price" id="pMax"></div></div>
+    </div>
+    <div class="card hidden" id="chuteRes">
+      <div class="row"><div class="small mut">Seu chute</div><div class="price" style="font-size:20px" id="chuteVal"></div></div>
+      <div class="veredito" id="chuteVer" style="margin:8px 0 12px"></div>
+      <button class="btn dark" type="button" id="btnDesafio" style="min-height:48px;font-size:15px">Desafiar um amigo</button>
     </div>
     <div class="small mut" id="resMotivo"></div>
     <button class="btn acc" id="btnAnuncio" type="button">Gerar anúncio pronto</button>
@@ -169,8 +191,33 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
     </div>
     <a class="btn acc" id="btnAssinar" href="#" target="_blank" rel="noopener">Liberar meu acesso</a>
     <button class="btn out" id="btnJaPaguei" type="button">Já paguei, liberar meu acesso</button>
+    <button class="btn out" id="btnPayIndicar" type="button">Ou ganhe grátis indicando amigos</button>
     <div class="note" id="payNota">Pague com o mesmo e-mail desta conta: <b id="payEmail"></b>. O acesso libera sozinho em até 1 minuto depois da confirmação.</div>
     <div class="err hidden" id="errPay"></div>
+  </section>
+
+  <!-- INDICAR -->
+  <section class="view" id="v-indicar">
+    <h2 style="margin:0;font-size:30px;line-height:1.1">Indique e ganhe</h2>
+    <div class="hero" style="display:flex;flex-direction:column;gap:10px">
+      <div><span class="tag" id="indTag1">+3 GRÁTIS</span></div>
+      <div style="font-weight:600" id="indRegra1">Cada amigo que usar o app pelo seu link te dá +3 avaliações grátis.</div>
+      <div><span class="tag">VITALÍCIO GRÁTIS</span></div>
+      <div style="font-weight:600" id="indRegra2">2 amigos compraram? Seu acesso vitalício sai de graça.</div>
+      <div class="small" style="color:#D9D7D0" id="indRegra3">Seu amigo também ganha 1 avaliação extra.</div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:10px">
+      <div class="row"><div style="font-weight:600">Amigos que usaram</div><div class="price" style="font-size:20px" id="indUsaram">0</div></div>
+      <div class="row"><div style="font-weight:600">Amigos que compraram</div><div class="price" style="font-size:20px" id="indCompraram">0 de 2</div></div>
+      <div class="barra"><div id="indBarra" style="width:0%"></div></div>
+      <div class="small mut" id="indStatus"></div>
+    </div>
+    <div class="lab" style="margin-bottom:-10px">SEU LINK</div>
+    <div class="linkbox" id="indLink">carregando…</div>
+    <button class="btn acc" id="btnIndShare" type="button">Mandar meu link</button>
+    <a class="btn out" id="lnkIndZap" href="https://wa.me/" target="_blank" rel="noopener">Enviar no WhatsApp</a>
+    <button class="btn out" id="btnIndCopiar" type="button">Copiar link</button>
+    <div class="small mut" id="indMsg"></div>
   </section>
 
   <!-- SALVOS -->
@@ -189,6 +236,7 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
 
 <nav class="nav hidden" id="nav">
   <button id="navAval" class="on" type="button"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Avaliar</button>
+  <button id="navIndicar" type="button"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12v9H4v-9"/><path d="M2 7h20v5H2z"/><path d="M12 21V7"/><path d="M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z"/></svg>Indicar</button>
   <button id="navSalvos" type="button"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>Meus itens</button>
 </nav>
 
@@ -196,6 +244,8 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
 const $ = (id) => document.getElementById(id);
 const brl = (n) => 'R$ ' + Math.round(Number(n) || 0).toLocaleString('pt-BR');
 let sb = null, cfg = {}, sessao = null, me = null;
+try { const r = new URLSearchParams(location.search).get('ref'); if (r) localStorage.setItem('qv_ref', r.toUpperCase()); } catch (e) {}
+let ind = null, chute = null, rodada = 0;
 let atual = null, salvos = [], fotoThumb = null, fotoArte = null, fotoDataUrl = null, arteBlob = null;
 
 function mostrar(v) {
@@ -203,8 +253,9 @@ function mostrar(v) {
   const logado = !!sessao && !['v-login', 'v-load'].includes(v);
   $('nav').classList.toggle('hidden', !logado);
   $('saldo').classList.toggle('hidden', !logado);
-  $('navAval').classList.toggle('on', v !== 'v-salvos');
+  $('navAval').classList.toggle('on', !['v-salvos', 'v-indicar'].includes(v));
   $('navSalvos').classList.toggle('on', v === 'v-salvos');
+  $('navIndicar').classList.toggle('on', v === 'v-indicar');
   window.scrollTo(0, 0);
 }
 function erro(id, msg) { const e = $(id); e.textContent = msg; e.classList.toggle('hidden', !msg); }
@@ -239,7 +290,13 @@ async function iniciar() {
   if (sessao) { await entrouNoApp(); } else mostrar('v-login');
 }
 async function entrouNoApp() {
+  let ganhou = false;
+  try {
+    const ref = localStorage.getItem('qv_ref');
+    if (ref) { const { d } = await api('/api/indicar', { ref }); localStorage.removeItem('qv_ref'); ganhou = !!d.ok; }
+  } catch (e) {}
   await atualizaMe();
+  if (ganhou) setTimeout(() => { const e = $('errInicio'); e.className = 'ok'; e.textContent = '🎁 Você ganhou 1 avaliação extra por ter vindo pelo link de um amigo!'; }, 0);
   carregaSalvos();
   mostrar('v-inicio');
 }
@@ -282,6 +339,7 @@ async function aoEscolher(ev) {
     fotoThumb = redimensiona(img, 400).toDataURL('image/jpeg', .7);
     fotoArte = redimensiona(img, 1080);
     $('prevImg').src = fotoThumb;
+    preparaChute();
     mostrar('v-analise');
     await analisa();
   } catch (e) { mostrar('v-inicio'); erro('errInicio', 'Não consegui ler essa foto. Tenta outra.'); }
@@ -289,11 +347,39 @@ async function aoEscolher(ev) {
 $('cam').addEventListener('change', aoEscolher);
 $('gal').addEventListener('change', aoEscolher);
 
+function preparaChute() {
+  chute = null; rodada++;
+  $('chute').value = ''; $('chute').disabled = false; $('bChute').disabled = false;
+  $('chuteMsg').textContent = ''; $('bPular').classList.remove('hidden');
+  $('tAnalise').textContent = 'Analisando...';
+  $('errInicio').className = 'err hidden';
+}
+let pronto = null;
+function tentaRevelar() {
+  if (!pronto || chute === null) return;
+  atual = pronto; pronto = null;
+  if (chute !== 'pulou') atual.chute = chute;
+  renderResultado(); mostrar('v-res');
+}
+$('fChute').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const n = Math.round(Number($('chute').value));
+  if (!n || n < 1) { $('chuteMsg').textContent = 'Digita um valor em reais, só números.'; return; }
+  chute = n; $('chute').disabled = true; $('bChute').disabled = true; $('bPular').classList.add('hidden');
+  $('chuteMsg').textContent = 'Chute cravado: ' + brl(n) + '. ' + (pronto ? '' : 'Esperando a IA…');
+  tentaRevelar();
+});
+$('bPular').onclick = () => { chute = 'pulou'; tentaRevelar(); if (!pronto) { $('bPular').classList.add('hidden'); $('chuteMsg').textContent = 'Beleza, já já sai o resultado.'; } };
+
 async function analisa() {
+  const minha = rodada; pronto = null;
   const { status, d } = await api('/api/avaliar', { imagem: fotoDataUrl });
+  if (minha !== rodada) return;
   if (status === 200) {
-    atual = Object.assign({ thumb: fotoThumb }, d);
-    renderResultado(); mostrar('v-res'); atualizaMe(); return;
+    pronto = Object.assign({ thumb: fotoThumb }, d);
+    atualizaMe();
+    if (chute === null) { $('tAnalise').textContent = 'Pronto! Crava teu chute 👇'; $('chute').focus(); }
+    tentaRevelar(); return;
   }
   if (status === 402) { await atualizaMe(); mostrar('v-pay'); return; }
   if (status === 401) { sessao = null; mostrar('v-login'); return; }
@@ -310,8 +396,19 @@ function renderResultado() {
   $('resEstado').textContent = a.estado || '';
   $('pRap').textContent = brl(a.rapido); $('pJus').textContent = brl(a.justo); $('pMax').textContent = brl(a.maximo);
   $('resMotivo').textContent = (a.motivo || '') + (a.confianca ? ' · confiança ' + a.confianca : '');
+  const temChute = typeof a.chute === 'number';
+  $('chuteRes').classList.toggle('hidden', !temChute);
+  if (temChute) { $('chuteVal').textContent = brl(a.chute); $('chuteVer').textContent = veredito(a.chute, a.justo); }
   $('btnSalvar').disabled = !!a.id;
   $('btnSalvar').textContent = a.id ? 'Salvo ✓' : 'Salvar';
+}
+function veredito(c, j) {
+  j = Number(j) || 0; if (!j) return '';
+  const dif = Math.abs(c - j) / j;
+  if (dif <= 0.10) return '🎯 Na mosca! Você manja de preço.';
+  if (dif <= 0.25) return '🔥 Chegou bem perto!';
+  if (c > j) return dif <= 0.6 ? '😅 Chutou alto… ia ficar encalhado.' : '🤑 Sonhou alto demais!';
+  return dif <= 0.6 ? '😬 Chutou baixo… ia perder dinheiro.' : '😱 Ia vender a preço de banana!';
 }
 $('btnVoltar').onclick = () => mostrar('v-inicio');
 $('btnVoltaRes').onclick = () => mostrar('v-res');
@@ -322,6 +419,61 @@ $('btnJaPaguei').onclick = async () => {
   if (me && me.pago) { mostrar('v-inicio'); }
   else erro('errPay', 'Ainda não encontramos o pagamento pra ' + (me?.email || 'este e-mail') + '. Se acabou de pagar, espera 1 minuto e tenta de novo.');
 };
+
+$('btnPayIndicar').onclick = () => abreIndicar();
+
+// ---------- indique e ganhe ----------
+async function carregaIndicacao() {
+  if (ind) return ind;
+  const { status, d } = await api('/api/indicar');
+  if (status === 200 && d.codigo) ind = d;
+  return ind;
+}
+const linkIndicacao = () => location.origin + '/?ref=' + (ind ? ind.codigo : '');
+async function abreIndicar() {
+  mostrar('v-indicar'); $('indMsg').textContent = '';
+  ind = null; await carregaIndicacao();
+  if (!ind) { $('indLink').textContent = 'Não consegui gerar seu link agora. Tenta de novo daqui a pouco.'; return; }
+  $('indTag1').textContent = '+' + ind.bonusPorAmigo + ' GRÁTIS';
+  $('indRegra1').textContent = 'Cada amigo que usar o app pelo seu link te dá +' + ind.bonusPorAmigo + ' avaliações grátis.';
+  $('indRegra2').textContent = ind.metaVitalicio + ' amigos compraram? Seu acesso vitalício sai de graça.';
+  $('indRegra3').textContent = 'Seu amigo também ganha ' + ind.bonusIndicado + ' avaliação extra.';
+  $('indUsaram').textContent = ind.usaram;
+  $('indCompraram').textContent = Math.min(ind.compraram, ind.metaVitalicio) + ' de ' + ind.metaVitalicio;
+  $('indBarra').style.width = Math.min(100, ind.compraram / ind.metaVitalicio * 100) + '%';
+  $('indStatus').textContent = me && me.pago ? 'Seu acesso já está liberado. Indique mesmo assim e ajude a galera a vender melhor!'
+    : ind.compraram >= ind.metaVitalicio ? 'Meta batida! Seu acesso vitalício foi liberado. 🎉'
+    : 'Faltam ' + (ind.metaVitalicio - ind.compraram) + ' compra(s) de amigos pro seu vitalício grátis.';
+  $('indLink').textContent = linkIndicacao();
+  $('lnkIndZap').href = 'https://wa.me/?text=' + encodeURIComponent(textoIndicacao());
+}
+const textoIndicacao = () => 'Descobri um app que diz quanto vale qualquer coisa só com uma foto 📸💰 Usa meu link e ganha uma avaliação extra: ' + linkIndicacao();
+$('navIndicar').onclick = () => abreIndicar();
+$('btnIndShare').onclick = async () => {
+  if (!ind) return;
+  try { if (navigator.share) await navigator.share({ text: textoIndicacao() }); else { await navigator.clipboard.writeText(textoIndicacao()); $('indMsg').textContent = 'Copiado! Agora é só colar pros amigos.'; } } catch (e) {}
+};
+$('btnIndCopiar').onclick = async () => {
+  if (!ind) return;
+  try { await navigator.clipboard.writeText(linkIndicacao()); $('indMsg').textContent = 'Link copiado!'; } catch (e) { $('indMsg').textContent = 'Segure o dedo no link pra copiar.'; }
+};
+
+// Desafiar um amigo (chute)
+$('btnDesafio').onclick = async () => {
+  const a = atual; if (!a || typeof a.chute !== 'number') return;
+  await carregaIndicacao();
+  const texto = 'Chutei ' + brl(a.chute) + ' no meu ' + a.objeto + ' e o Quanto Vale? disse ' + brl(a.justo) + ' 😱 Duvido você acertar o valor das suas coisas: ' + (ind ? linkIndicacao() : location.origin);
+  try {
+    const url = await geraDesafio(a); const blob = await (await fetch(url)).blob();
+    const arq = new File([blob], 'desafio-quanto-vale.jpg', { type: 'image/jpeg' });
+    if (navigator.canShare && navigator.canShare({ files: [arq] })) return await navigator.share({ files: [arq], text: texto });
+    if (navigator.share) return await navigator.share({ text: texto });
+    await navigator.clipboard.writeText(texto);
+    const l = document.createElement('a'); l.href = url; l.download = 'desafio-quanto-vale.jpg'; document.body.append(l); l.click(); l.remove();
+    alertaRes('Imagem salva e texto copiado. Agora é só postar!');
+  } catch (e) {}
+};
+function alertaRes(t) { $('resMotivo').textContent = t; }
 
 // ---------- salvos ----------
 async function carregaSalvos() {
@@ -420,6 +572,35 @@ async function geraArte(a) {
   x.fillStyle = '#5C5A54'; x.fillRect(60, 1262, W - 120, 2);
   x.fillStyle = '#B5B2A8'; x.font = '500 30px Inter, sans-serif'; x.fillText('avaliado no', 60, 1310);
   x.fillStyle = '#F6F5F1'; x.font = '700 34px "Space Grotesk", sans-serif'; x.fillText('Quanto Vale?', 230, 1311);
+  return c.toDataURL('image/jpeg', .9);
+}
+
+async function geraDesafio(a) {
+  try { await Promise.all([document.fonts.load('700 80px "Space Grotesk"'), document.fonts.load('600 40px Inter')]); } catch (e) {}
+  const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  x.fillStyle = '#121212'; x.fillRect(0, 0, W, H);
+  const fx = 60, fy = 60, fw = W - 120, fh = 640;
+  x.save(); rr(x, fx, fy, fw, fh, 48); x.clip(); x.fillStyle = '#2A2A28'; x.fillRect(fx, fy, fw, fh);
+  try { const src = await fonteDaFoto(a); const sw = src.width || src.naturalWidth, sh = src.height || src.naturalHeight;
+    const s = Math.max(fw / sw, fh / sh), dw = sw * s, dh = sh * s; x.drawImage(src, fx + (fw - dw) / 2, fy + (fh - dh) / 2, dw, dh); } catch (e) {}
+  x.restore();
+  x.fillStyle = '#D4F542'; rr(x, 96, 96, 300, 64, 32); x.fill();
+  x.fillStyle = '#121212'; x.font = '700 30px Inter, sans-serif'; x.textBaseline = 'middle'; x.fillText('ADIVINHA AÍ', 140, 129);
+  x.textBaseline = 'alphabetic';
+  x.fillStyle = '#F6F5F1'; x.font = '700 52px "Space Grotesk", sans-serif'; x.fillText(quebra(x, a.objeto, W - 120, 1)[0], 60, 790);
+  const caixa = (bx, rot, val, cor, fundo) => {
+    x.fillStyle = fundo; rr(x, bx, 830, 465, 230, 36); x.fill();
+    x.fillStyle = cor; x.font = '600 32px Inter, sans-serif'; x.fillText(rot, bx + 36, 892);
+    x.font = '700 84px "Space Grotesk", sans-serif'; x.fillText(brl(val), bx + 32, 1010);
+  };
+  caixa(60, 'Meu chute', a.chute, '#F6F5F1', '#2A2A28');
+  caixa(555, 'Quanto vale', a.justo, '#121212', '#D4F542');
+  x.fillStyle = '#F6F5F1'; x.font = '700 46px "Space Grotesk", sans-serif';
+  quebra(x, veredito(a.chute, a.justo), W - 120, 2).forEach((l, i) => x.fillText(l, 60, 1140 + i * 56));
+  x.fillStyle = '#5C5A54'; x.fillRect(60, 1262, W - 120, 2);
+  x.fillStyle = '#B5B2A8'; x.font = '500 30px Inter, sans-serif'; x.fillText('E você, acerta?', 60, 1310);
+  x.fillStyle = '#F6F5F1'; x.font = '700 34px "Space Grotesk", sans-serif'; x.textAlign = 'right'; x.fillText('Quanto Vale?', W - 60, 1311); x.textAlign = 'left';
   return c.toDataURL('image/jpeg', .9);
 }
 
