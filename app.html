@@ -91,7 +91,7 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
     </form>
     <div class="err hidden" id="errLogin"></div>
     <div class="ok hidden" id="okLogin"></div>
-    <a class="small mut" href="/" style="text-align:center">Ainda não conhece? Ver como funciona</a>
+    <a class="small mut" href="/#teste" style="text-align:center">Ainda não comprou? Faça o teste grátis</a>
   </section>
 
   <!-- INÍCIO -->
@@ -182,8 +182,8 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
 
   <!-- PAYWALL -->
   <section class="view" id="v-pay">
-    <h2 style="margin:0;font-size:30px;line-height:1.1">Sua avaliação grátis acabou.</h2>
-    <div class="mut">Libere seu acesso vitalício e avalie o que quiser, com anúncio pronto e itens salvos.</div>
+    <h2 style="margin:0;font-size:30px;line-height:1.1">Falta liberar seu acesso.</h2>
+    <div class="mut">Com o acesso vitalício você avalia o que quiser, gera o anúncio pronto e salva seus itens.</div>
     <div class="hero">
       <span class="tag">ACESSO VITALÍCIO</span>
       <div class="price" style="margin-top:10px" id="precoTxt">R$ 14,90</div>
@@ -191,8 +191,9 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
     </div>
     <a class="btn acc" id="btnAssinar" href="#" target="_blank" rel="noopener">Liberar meu acesso</a>
     <button class="btn out" id="btnJaPaguei" type="button">Já paguei, liberar meu acesso</button>
-    <button class="btn out" id="btnPayIndicar" type="button">Ou ganhe grátis indicando amigos</button>
+    <button class="btn out" id="btnPayIndicar" type="button">Ou ganhe grátis: indique 2 amigos que comprarem</button>
     <div class="note" id="payNota">Pague com o mesmo e-mail desta conta: <b id="payEmail"></b>. O acesso libera sozinho em até 1 minuto depois da confirmação.</div>
+    <a class="small mut" href="/#teste" style="text-align:center">Ainda não testou? Faça o teste grátis na página</a>
     <div class="err hidden" id="errPay"></div>
   </section>
 
@@ -200,14 +201,11 @@ input.txt{height:52px;border:1px solid #CFCCC3;border-radius:14px;padding:0 14px
   <section class="view" id="v-indicar">
     <h2 style="margin:0;font-size:30px;line-height:1.1">Indique e ganhe</h2>
     <div class="hero" style="display:flex;flex-direction:column;gap:10px">
-      <div><span class="tag" id="indTag1">+3 GRÁTIS</span></div>
-      <div style="font-weight:600" id="indRegra1">Cada amigo que usar o app pelo seu link te dá +3 avaliações grátis.</div>
       <div><span class="tag">VITALÍCIO GRÁTIS</span></div>
-      <div style="font-weight:600" id="indRegra2">2 amigos compraram? Seu acesso vitalício sai de graça.</div>
-      <div class="small" style="color:#D9D7D0" id="indRegra3">Seu amigo também ganha 1 avaliação extra.</div>
+      <div style="font-weight:600" id="indRegra2">2 amigos compraram pelo seu link? Seu acesso vitalício sai de graça.</div>
+      <div class="small" style="color:#D9D7D0">Seu amigo testa grátis pelo seu link e, se gostar, compra. Ele precisa criar a conta no app no mesmo celular em que abriu o seu link.</div>
     </div>
     <div class="card" style="display:flex;flex-direction:column;gap:10px">
-      <div class="row"><div style="font-weight:600">Amigos que usaram</div><div class="price" style="font-size:20px" id="indUsaram">0</div></div>
       <div class="row"><div style="font-weight:600">Amigos que compraram</div><div class="price" style="font-size:20px" id="indCompraram">0 de 2</div></div>
       <div class="barra"><div id="indBarra" style="width:0%"></div></div>
       <div class="small mut" id="indStatus"></div>
@@ -274,7 +272,7 @@ async function atualizaMe() {
   const { status, d } = await api('/api/me');
   if (status !== 200) return;
   me = d;
-  $('saldo').textContent = me.pago ? 'Liberado' : (me.restantesGratis + ' grátis');
+  $('saldo').textContent = me.pago ? 'Liberado' : 'Liberar acesso';
   $('payEmail').textContent = me.email;
 }
 
@@ -290,15 +288,13 @@ async function iniciar() {
   if (sessao) { await entrouNoApp(); } else mostrar('v-login');
 }
 async function entrouNoApp() {
-  let ganhou = false;
   try {
     const ref = localStorage.getItem('qv_ref');
-    if (ref) { const { d } = await api('/api/indicar', { ref }); localStorage.removeItem('qv_ref'); ganhou = !!d.ok; }
+    if (ref) { await api('/api/indicar', { ref }); localStorage.removeItem('qv_ref'); }
   } catch (e) {}
   await atualizaMe();
-  if (ganhou) setTimeout(() => { const e = $('errInicio'); e.className = 'ok'; e.textContent = '🎁 Você ganhou 1 avaliação extra por ter vindo pelo link de um amigo!'; }, 0);
   carregaSalvos();
-  mostrar('v-inicio');
+  mostrar(me && me.pago ? 'v-inicio' : 'v-pay');
 }
 
 // ---------- login ----------
@@ -434,11 +430,7 @@ async function abreIndicar() {
   mostrar('v-indicar'); $('indMsg').textContent = '';
   ind = null; await carregaIndicacao();
   if (!ind) { $('indLink').textContent = 'Não consegui gerar seu link agora. Tenta de novo daqui a pouco.'; return; }
-  $('indTag1').textContent = '+' + ind.bonusPorAmigo + ' GRÁTIS';
-  $('indRegra1').textContent = 'Cada amigo que usar o app pelo seu link te dá +' + ind.bonusPorAmigo + ' avaliações grátis.';
-  $('indRegra2').textContent = ind.metaVitalicio + ' amigos compraram? Seu acesso vitalício sai de graça.';
-  $('indRegra3').textContent = 'Seu amigo também ganha ' + ind.bonusIndicado + ' avaliação extra.';
-  $('indUsaram').textContent = ind.usaram;
+  $('indRegra2').textContent = ind.metaVitalicio + ' amigos compraram pelo seu link? Seu acesso vitalício sai de graça.';
   $('indCompraram').textContent = Math.min(ind.compraram, ind.metaVitalicio) + ' de ' + ind.metaVitalicio;
   $('indBarra').style.width = Math.min(100, ind.compraram / ind.metaVitalicio * 100) + '%';
   $('indStatus').textContent = me && me.pago ? 'Seu acesso já está liberado. Indique mesmo assim e ajude a galera a vender melhor!'
@@ -447,7 +439,7 @@ async function abreIndicar() {
   $('indLink').textContent = linkIndicacao();
   $('lnkIndZap').href = 'https://wa.me/?text=' + encodeURIComponent(textoIndicacao());
 }
-const textoIndicacao = () => 'Descobri um app que diz quanto vale qualquer coisa só com uma foto 📸💰 Usa meu link e ganha uma avaliação extra: ' + linkIndicacao();
+const textoIndicacao = () => 'Descobri um app que diz quanto vale qualquer coisa só com uma foto 📸💰 Faz o teste grátis pelo meu link: ' + linkIndicacao();
 $('navIndicar').onclick = () => abreIndicar();
 $('btnIndShare').onclick = async () => {
   if (!ind) return;
@@ -509,7 +501,8 @@ function renderSalvos() {
   $('qtdSalvos').textContent = salvos.length + (salvos.length === 1 ? ' salvo' : ' salvos');
   $('vazio').classList.toggle('hidden', salvos.length > 0);
 }
-$('navAval').onclick = () => mostrar('v-inicio');
+$('navAval').onclick = () => mostrar(me && me.pago ? 'v-inicio' : 'v-pay');
+$('saldo').onclick = () => { if (!(me && me.pago)) mostrar('v-pay'); };
 $('navSalvos').onclick = () => { renderSalvos(); mostrar('v-salvos'); };
 
 // ---------- anúncio ----------

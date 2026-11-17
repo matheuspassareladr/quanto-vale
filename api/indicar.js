@@ -1,7 +1,7 @@
-import { admin, usuarioDoPedido, regrasIndicacao, json } from './_lib.js';
+import { admin, usuarioDoPedido, regrasIndicacao, temAcesso, premiaIndicador, json } from './_lib.js';
 
 // GET  → meu código + quantos amigos usaram/compraram
-// POST { ref } → registra que esta conta nova chegou pelo link de alguém
+// POST { ref } → registra que esta conta nova chegou pelo link de alguém (vale até 3 dias depois de criar a conta)
 const LETRAS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const novoCodigo = () => Array.from({ length: 6 }, () => LETRAS[Math.floor(Math.random() * LETRAS.length)]).join('');
 
@@ -31,9 +31,12 @@ export default async function handler(req, res) {
     if (!dono || dono.user_id === user.id) return json(res, 200, { ok: false, motivo: 'codigo' });
     // Só vale pra conta criada nos últimos 3 dias
     if (Date.now() - new Date(user.created_at).getTime() > 3 * 24 * 3600 * 1000) return json(res, 200, { ok: false, motivo: 'conta_antiga' });
-    const { error } = await db.from('indicacoes').insert({ indicado_id: user.id, indicado_email: (user.email || '').toLowerCase(), indicador_id: dono.user_id });
+    // Normalmente a pessoa compra ANTES de criar a conta: se já pagou, já conta pra quem indicou.
+    const jaPagou = await temAcesso(user.email);
+    const { error } = await db.from('indicacoes').insert({ indicado_id: user.id, indicado_email: (user.email || '').toLowerCase(), indicador_id: dono.user_id, usou: true, pagou: jaPagou });
     if (error) return json(res, 200, { ok: false, motivo: error.code === '23505' ? 'ja_indicado' : 'erro' });
-    return json(res, 200, { ok: true, bonus: regrasIndicacao().bonusIndicado });
+    if (jaPagou) { try { await premiaIndicador(db, dono.user_id); } catch (e) { console.error('premia', e); } }
+    return json(res, 200, { ok: true });
   }
 
   try {
