@@ -64,29 +64,33 @@ export function lerImagem(img) {
 export async function avaliarFoto({ mime, b64 }) {
   let texto = '';
   if (process.env.GEMINI_API_KEY) {
-    const modelos = process.env.AI_MODEL ? [process.env.AI_MODEL] : ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.6-flash'];
+    // Gemini: os modelos novos "pensam" demais por padrão; pedimos raciocínio baixo pra responder rápido.
+    const modelos = process.env.AI_MODEL ? [process.env.AI_MODEL] : ['gemini-3.8-flash', 'gemini-flash-latest'];
+    const inicio = Date.now();
     let r = null;
+    const chama = (modelo, pensar) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+      method: 'POST',
+      signal: AbortSignal.timeout(Math.max(5000, 52000 - (Date.now() - inicio))),
+      headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ inline_data: { mime_type: mime, data: b64 } }, { text: PROMPT }] }],
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.3, ...(pensar ? { thinkingConfig: { thinkingLevel: pensar } } : {}) }
+      })
+    });
     for (const modelo of modelos) {
       const t0 = Date.now();
       try {
-      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
-        signal: AbortSignal.timeout(24000),
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ inline_data: { mime_type: mime, data: b64 } }, { text: PROMPT }] }],
-          generationConfig: { responseMimeType: 'application/json', temperature: 0.3 }
-        })
-      });
-      } catch (e) { console.error('IA modelo', modelo, 'demorou demais', Date.now() - t0, 'ms'); r = null; continue; }
+        r = await chama(modelo, 'low');
+        if (r.status === 400) { console.error('IA', modelo, 'sem thinkingLevel', await r.text()); r = await chama(modelo, null); }
+      } catch (e) { console.error('IA modelo', modelo, 'demorou demais', Date.now() - t0, 'ms'); r = null; break; }
       console.log('IA modelo', modelo, r.status, Date.now() - t0, 'ms');
-      if (r.ok || ![404, 400].includes(r.status)) break;
+      if (r.ok || r.status !== 404) break;
       console.error('IA modelo', modelo, r.status, await r.text());
     }
     if (!r) return { status: 504 };
     if (!r.ok) { console.error('IA', r.status, await r.text()); return { status: r.status === 429 ? 429 : 502 }; }
     const out = await r.json();
-    texto = (out.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+    texto = (out.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join('');
   } else {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
