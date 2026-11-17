@@ -88,7 +88,7 @@ export async function avaliarFoto({ mime, b64 }) {
       console.error('IA modelo', modelo, r.status, await r.text());
     }
     if (!r) return { status: 504 };
-    if (!r.ok) { console.error('IA', r.status, await r.text()); return { status: r.status === 429 ? 429 : 502 }; }
+    if (!r.ok) { console.error('IA', r.status, await r.text().catch(() => '')); return { status: r.status === 429 ? 429 : 502 }; }
     const out = await r.json();
     texto = (out.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join('');
   } else {
