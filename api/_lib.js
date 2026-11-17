@@ -64,10 +64,13 @@ export function lerImagem(img) {
 export async function avaliarFoto({ mime, b64 }) {
   let texto = '';
   if (process.env.GEMINI_API_KEY) {
-    const modelos = process.env.AI_MODEL ? [process.env.AI_MODEL] : ['gemini-2.5-flash', 'gemini-3.6-flash', 'gemini-flash-latest'];
+    const modelos = process.env.AI_MODEL ? [process.env.AI_MODEL] : ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.6-flash'];
     let r = null;
     for (const modelo of modelos) {
+      const t0 = Date.now();
+      try {
       r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+        signal: AbortSignal.timeout(24000),
         method: 'POST',
         headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
         body: JSON.stringify({
@@ -75,9 +78,12 @@ export async function avaliarFoto({ mime, b64 }) {
           generationConfig: { responseMimeType: 'application/json', temperature: 0.3 }
         })
       });
+      } catch (e) { console.error('IA modelo', modelo, 'demorou demais', Date.now() - t0, 'ms'); r = null; continue; }
+      console.log('IA modelo', modelo, r.status, Date.now() - t0, 'ms');
       if (r.ok || ![404, 400].includes(r.status)) break;
       console.error('IA modelo', modelo, r.status, await r.text());
     }
+    if (!r) return { status: 504 };
     if (!r.ok) { console.error('IA', r.status, await r.text()); return { status: r.status === 429 ? 429 : 502 }; }
     const out = await r.json();
     texto = (out.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
