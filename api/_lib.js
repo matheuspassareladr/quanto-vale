@@ -65,7 +65,7 @@ export async function avaliarFoto({ mime, b64 }) {
   let texto = '';
   if (process.env.GEMINI_API_KEY) {
     // Gemini: os modelos novos "pensam" demais por padrão; pedimos raciocínio baixo pra responder rápido.
-    const modelos = process.env.AI_MODEL ? [process.env.AI_MODEL] : ['gemini-3.8-flash', 'gemini-flash-latest'];
+    const modelos = process.env.AI_MODEL ? [process.env.AI_MODEL] : ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-flash-lite-latest'];
     const inicio = Date.now();
     let r = null;
     const chama = (modelo, pensar) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
@@ -84,7 +84,7 @@ export async function avaliarFoto({ mime, b64 }) {
         if (r.status === 400) { console.error('IA', modelo, 'sem thinkingLevel', await r.text()); r = await chama(modelo, null); }
       } catch (e) { console.error('IA modelo', modelo, 'demorou demais', Date.now() - t0, 'ms'); r = null; break; }
       console.log('IA modelo', modelo, r.status, Date.now() - t0, 'ms');
-      if (r.ok || r.status !== 404) break;
+      if (r.ok || ![404, 429, 500, 503].includes(r.status)) break;   // 503/429 = lotado: tenta o próximo
       console.error('IA modelo', modelo, r.status, await r.text());
     }
     if (!r) return { status: 504 };
