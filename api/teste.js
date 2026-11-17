@@ -20,13 +20,14 @@ export default async function handler(req, res) {
   const desde = new Date(); desde.setUTCHours(3, 0, 0, 0); // meia-noite de Brasília
   if (desde > new Date()) desde.setUTCDate(desde.getUTCDate() - 1);
 
-  const base = () => db.from('webhooks_log').select('id', { count: 'exact', head: true }).eq('corpo->>origem', 'teste').gte('recebido_em', desde.toISOString());
+  const base = () => db.from('webhooks_log').select('id', { count: 'exact', head: true }).eq('corpo->>origem', 'teste').eq('corpo->>ok', 'true').gte('recebido_em', desde.toISOString());
   const [{ count: doIp }, { count: total }] = await Promise.all([base().eq('corpo->>ip', ip), base()]);
   if ((doIp || 0) >= POR_IP() || (total || 0) >= GLOBAL()) return json(res, 429, { erro: 'limite' });
 
-  await db.from('webhooks_log').insert({ corpo: { origem: 'teste', ip } });
   const { status, dado } = await avaliarFoto(img);
   if (status !== 200) return json(res, status, { erro: status === 422 ? 'nao_reconheci' : 'ia' });
+  // Só conta o teste que deu certo (foto ruim ou erro não gasta o teste da pessoa)
+  await db.from('webhooks_log').insert({ corpo: { origem: 'teste', ip, ok: true, objeto: dado.objeto } });
 
   // No teste mostra os 3 preços completos; o anúncio vai só como "amostra" (o completo é no app).
   const desc = String(dado.descricao || '');
