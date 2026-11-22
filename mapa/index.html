@@ -152,6 +152,7 @@ footer{padding:40px 0 110px;text-align:center;color:var(--sub);font-size:13px;bo
 </head>
 <body>
 
+<div id="avisoBoleto" style="display:none;background:#14532d;color:#dcfce7;text-align:center;padding:14px 16px;font-weight:600;font-size:15px">✅ Pedido recebido! Assim que o pagamento for confirmado, você recebe o link do app e o código de acesso no seu e-mail.</div>
 <div class="faixa">⏳ Prova em <b id="fxDias">—</b> · Domingo, 6 de dezembro · Banca Cesgranrio</div>
 
 <header class="hero"><div class="w">
@@ -304,6 +305,7 @@ function cont(){
   document.getElementById('fxDias').textContent = ms > 0 ? `${d} dia${d === 1 ? '' : 's'}` : 'hoje';
 }
 cont(); setInterval(cont, 30000);
+if (new URLSearchParams(location.search).get('boleto')) document.getElementById('avisoBoleto').style.display = 'block';
 document.querySelectorAll('#tAlts .op').forEach(b => b.onclick = () => {
   const ok = b.dataset.c === '1';
   document.querySelectorAll('#tAlts .op').forEach(x => { x.disabled = true; if (x.dataset.c === '1') x.classList.add('ok'); });
