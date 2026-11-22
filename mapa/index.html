@@ -313,7 +313,7 @@ document.querySelectorAll('#tAlts .op').forEach(b => b.onclick = () => {
   document.getElementById('tRes').textContent = ok ? '✅ Acertou!' : '❌ Quase! A resposta é C.';
   document.getElementById('tExpl').classList.add('on');
 });
-fetch('/api/mapa-config').then(r => r.json()).then(c => {
+fetch('/api/mapa-config', {cache: 'no-store'}).then(r => r.json()).then(c => {
   if (c.checkout) document.querySelectorAll('a.chk').forEach(a => { if (a.getAttribute('href') !== '#oferta' || a.closest('.oferta')) a.href = c.checkout; });
   document.querySelectorAll('a.chk[href="#"]').forEach(a => a.href = c.checkout || '#oferta');
   if (c.video) { document.getElementById('vsl').src = c.video; document.getElementById('video').style.display = ''; }
