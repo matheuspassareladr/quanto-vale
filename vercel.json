@@ -2,6 +2,28 @@
  "cleanUrls": true,
  "redirects": [
   {
+   "source": "/",
+   "has": [
+    {
+     "type": "host",
+     "value": "mapadaaprovacaobr.vercel.app"
+    }
+   ],
+   "destination": "/mapa",
+   "permanent": false
+  },
+  {
+   "source": "/app",
+   "has": [
+    {
+     "type": "host",
+     "value": "mapadaaprovacaobr.vercel.app"
+    }
+   ],
+   "destination": "/mapa/app",
+   "permanent": false
+  },
+  {
    "source": "/app.",
    "destination": "/app",
    "permanent": false
@@ -27,27 +49,5 @@
   "api/mapa.js": {
    "maxDuration": 60
   }
- },
- "rewrites": [
-  {
-   "source": "/",
-   "has": [
-    {
-     "type": "host",
-     "value": "mapadaaprovacaobr.vercel.app"
-    }
-   ],
-   "destination": "/mapa"
-  },
-  {
-   "source": "/app",
-   "has": [
-    {
-     "type": "host",
-     "value": "mapadaaprovacaobr.vercel.app"
-    }
-   ],
-   "destination": "/mapa/app"
-  }
- ]
+ }
 }
