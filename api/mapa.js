@@ -38,7 +38,7 @@ async function perguntarIA(pergunta, ctx) {
       const corpo = pensar => JSON.stringify({
         systemInstruction: { parts: [{ text: SISTEMA }] },
         contents: [{ role: 'user', parts: [{ text: texto }] }],
-        generationConfig: { temperature: 0.4, maxOutputTokens: 1400, ...(pensar ? { thinkingConfig: { thinkingLevel: 'low' } } : {}) }
+        generationConfig: { temperature: 0.4, maxOutputTokens: 1400, ...(pensar ? { thinkingConfig: { thinkingLevel: 'minimal' } } : {}) }
       });
       const chama = pensar => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
         method: 'POST',
