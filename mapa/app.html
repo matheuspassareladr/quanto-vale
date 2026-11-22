@@ -528,7 +528,7 @@ async function enviar(texto){
   texto = (texto || $('#pergunta').value).trim(); if (!texto) return;
   $('#pergunta').value = '';
   addMsg('eu', esc(texto));
-  const d = addMsg('ia', '<span class="digitando"><i></i><i></i><i></i></span>');
+  const d = addMsg('ia', '<span class="digitando"><i></i><i></i><i></i></span> <span style="color:var(--sub);font-size:13px">O professor está pensando... leva uns 20 segundos</span>');
   try {
     const r = await fetch('/api/mapa', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({k: CH, pergunta: texto, ctx: ctxIA})});
     const j = await r.json();
