@@ -1,5 +1,5 @@
 <!doctype html><meta charset="utf-8"><title>relay</title><body>enviando...<script>
 (async()=>{const q=new URLSearchParams(location.search);const arqs=(q.get('f')||'').split(',').filter(Boolean);
-for(const f of arqs){const r=await fetch('/midia/'+f);const b=await r.arrayBuffer();window.opener&&window.opener.postMessage({relay:1,nome:f.split('/').pop(),buf:b},'*',[b]);}
-window.opener&&window.opener.postMessage({relay:1,fim:1},'*');document.body.textContent='ok';setTimeout(()=>window.close(),500);})();
+for(const f of arqs){const r=await fetch('/midia/'+f);const b=await r.arrayBuffer();(window.opener||window.parent).postMessage({relay:1,nome:f.split('/').pop(),buf:b},'*',[b]);}
+(window.opener||window.parent).postMessage({relay:1,fim:1},'*');document.body.textContent='ok';setTimeout(()=>window.close(),500);})();
 </script>
