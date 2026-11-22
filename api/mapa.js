@@ -38,11 +38,11 @@ async function perguntarIA(pergunta, ctx) {
       const corpo = pensar => JSON.stringify({
         systemInstruction: { parts: [{ text: SISTEMA }] },
         contents: [{ role: 'user', parts: [{ text: texto }] }],
-        generationConfig: { temperature: 0.4, maxOutputTokens: 1400, ...(pensar ? { thinkingConfig: { thinkingLevel: 'minimal' } } : {}) }
+        generationConfig: { temperature: 0.4, maxOutputTokens: 1000, ...(pensar ? { thinkingConfig: { thinkingLevel: 'low' } } : {}) }
       });
       const chama = pensar => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
         method: 'POST',
-        signal: AbortSignal.timeout(Math.max(5000, 50000 - (Date.now() - inicio))),
+        signal: AbortSignal.timeout(Math.max(4000, Math.min(24000, 52000 - (Date.now() - inicio)))),
         headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
         body: corpo(pensar)
       });
@@ -50,7 +50,7 @@ async function perguntarIA(pergunta, ctx) {
       try {
         r = await chama(true);
         if (r.status === 400) r = await chama(false);
-      } catch (e) { console.error('mapa IA timeout', modelo); return null; }
+      } catch (e) { console.error('mapa IA timeout', modelo, Date.now() - inicio); if (Date.now() - inicio > 46000) return null; continue; }
       if (r.ok) {
         const out = await r.json();
         return (out.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join('').trim() || null;
