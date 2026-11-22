@@ -298,6 +298,22 @@ footer{padding:40px 0 110px;text-align:center;color:var(--sub);font-size:13px;bo
 <div class="fixo"><div class="w"><div class="txt"><b>R$ 29,90</b>acesso imediato</div><a class="cta chk" href="#oferta">Garantir acesso →</a></div></div>
 
 <script>
+// ── Rastreio: UTMs + Pixel da Meta (+ UTMify), configurados em /api/mapa-config ──
+function comUtms(url) {
+  try { const u = new URL(url), q = new URLSearchParams(location.search);
+    ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','src','sck'].forEach(k => { if (q.get(k) && !u.searchParams.get(k)) u.searchParams.set(k, q.get(k)); });
+    return u.toString(); } catch { return url; }
+}
+function rastreio(c) {
+  document.querySelectorAll('a.chk').forEach(a => { if (/^https?:/.test(a.getAttribute('href') || '')) a.href = comUtms(a.href); });
+  if (c.utmify) { const s = document.createElement('script'); s.src = 'https://cdn.utmify.com.br/scripts/utms/latest.js'; s.async = true; s.setAttribute('data-utmify-prevent-subids', ''); document.head.appendChild(s); }
+  if (c.utmifyPixel) { window.pixelId = c.utmifyPixel; const s = document.createElement('script'); s.src = 'https://cdn.utmify.com.br/scripts/pixel/pixel.js'; s.async = true; document.head.appendChild(s); }
+  if (c.pixel && !c.utmifyPixel) {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', c.pixel); fbq('track', 'PageView'); fbq('track', 'ViewContent', { content_name: 'Mapa da Aprovação Transpetro', value: 29.90, currency: 'BRL' });
+  }
+  document.addEventListener('click', e => { const a = e.target.closest('a.chk'); if (a && /^https?:/.test(a.href) && window.fbq) fbq('track', 'InitiateCheckout', { value: 29.90, currency: 'BRL' }); });
+}
 const PROVA = new Date('2026-12-06T13:00:00-03:00');
 function cont(){
   const ms = PROVA - new Date(); const d = Math.max(0, Math.floor(ms / 864e5)), h = Math.max(0, Math.floor(ms / 36e5) % 24), m = Math.max(0, Math.floor(ms / 6e4) % 60);
@@ -317,6 +333,7 @@ fetch('/api/mapa-config', {cache: 'no-store'}).then(r => r.json()).then(c => {
   if (c.checkout) document.querySelectorAll('a.chk').forEach(a => { if (a.getAttribute('href') !== '#oferta' || a.closest('.oferta')) a.href = c.checkout; });
   document.querySelectorAll('a.chk[href="#"]').forEach(a => a.href = c.checkout || '#oferta');
   if (c.video) { document.getElementById('vsl').src = c.video; document.getElementById('video').style.display = ''; }
+  rastreio(c);
 }).catch(() => {});
 </script>
 </body>
