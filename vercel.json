@@ -10,6 +10,11 @@
    "source": "/app/",
    "destination": "/app",
    "permanent": false
+  },
+  {
+   "source": "/mapa/",
+   "destination": "/mapa",
+   "permanent": false
   }
  ],
  "functions": {
@@ -17,6 +22,9 @@
    "maxDuration": 60
   },
   "api/teste.js": {
+   "maxDuration": 60
+  },
+  "api/mapa.js": {
    "maxDuration": 60
   }
  }

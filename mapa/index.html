@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070f24">
+<title>Mapa da Aprovação · Transpetro Administração e Controle</title>
+<meta name="description" content="App de reta final para a prova de 6/12: simulado real com notas de corte, treino por assunto, Professor IA, mapa visual e plano dia a dia.">
+<meta property="og:title" content="Mapa da Aprovação · Transpetro Administração e Controle">
+<meta property="og:description" content="Simulado real com as notas de corte, Professor IA e plano dia a dia até 6/12.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070f24;--bg2:#0b1530;--card:#111d3d;--card2:#16244a;--linha:#22325e;--txt:#eef2ff;--sub:#9aa8cf;--ouro:#f5b82e;--ouro2:#ffd66b;--verde:#22c55e;--verm:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;line-height:1.55;font-size:16px;overflow-x:hidden}
+h1,h2,h3{font-family:Sora,Inter,sans-serif;letter-spacing:-.025em;line-height:1.15}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.w{max-width:1080px;margin:0 auto;padding:0 20px}
+.faixa{background:linear-gradient(90deg,#b8860b,var(--ouro),#b8860b);color:#1a1203;text-align:center;font-weight:800;font-size:13.5px;padding:9px 14px;letter-spacing:.01em}
+.faixa b{font-family:Sora}
+/* hero */
+.hero{position:relative;padding:44px 0 60px;background:radial-gradient(90% 70% at 85% 0%,#22397e 0%,transparent 60%),radial-gradient(60% 50% at 0% 30%,#1a2a5e 0%,transparent 70%)}
+.hero .w{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.selo{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:rgba(245,184,46,.12);border:1px solid rgba(245,184,46,.35);color:var(--ouro2);font-size:13px;font-weight:700}
+.hero h1{font-size:44px;margin-top:16px;font-weight:800}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--ouro2),var(--ouro));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.l{font-size:18.5px;color:#c9d3f2;margin-top:16px;max-width:560px}
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:18px 30px;border-radius:16px;font-weight:800;font-size:17.5px;background:linear-gradient(135deg,var(--ouro2),var(--ouro));color:#1a1203;box-shadow:0 14px 40px rgba(245,184,46,.35);transition:transform .15s,box-shadow .15s;animation:pulsa 2.4s infinite}
+.cta:hover{transform:translateY(-2px)}
+@keyframes pulsa{0%,100%{box-shadow:0 14px 40px rgba(245,184,46,.35)}50%{box-shadow:0 14px 56px rgba(245,184,46,.6)}}
+.mini{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:13.5px;color:var(--sub)}
+.mini span{display:flex;align-items:center;gap:6px}
+.cont{display:flex;gap:10px;margin-top:26px;max-width:420px}
+.cont div{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--linha);border-radius:14px;padding:10px;text-align:center}
+.cont b{display:block;font-family:Sora;font-size:28px;color:var(--ouro2);line-height:1.1}
+.cont span{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.08em}
+/* celular */
+.cel{position:relative;width:300px;margin:0 auto;border-radius:44px;padding:12px;background:linear-gradient(160deg,#2b3a68,#0d1530);box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1px #33447a inset;transform:rotate(3deg)}
+.cel:before{content:"";position:absolute;top:22px;left:50%;transform:translateX(-50%);width:90px;height:22px;border-radius:12px;background:#050a18;z-index:2}
+.tela{border-radius:34px;overflow:hidden;background:var(--bg);padding:52px 14px 16px;height:590px}
+.tela .tp{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;font-size:13px}
+.tela .tp i{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--ouro2),var(--ouro));display:grid;place-items:center;font-style:normal;font-size:13px}
+.tela .res{margin-top:14px;border-radius:18px;padding:16px;text-align:center;background:radial-gradient(120% 120% at 100% 0%,#2a3f86,#0f1a3d)}
+.tela .res .n{font-family:Sora;font-size:44px;font-weight:800;color:var(--ouro2);line-height:1}
+.tela .st{display:inline-block;margin-top:8px;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:800;background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.4)}
+.tela .ln{display:flex;justify-content:space-between;margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--card2);border:1px solid var(--linha);font-size:12px}
+.tela .ln b{font-family:Sora}
+.tela .br{height:6px;border-radius:6px;background:#0a1430;margin:5px 0 9px;overflow:hidden}
+.tela .br i{display:block;height:100%;background:linear-gradient(90deg,var(--ouro),var(--ouro2))}
+.tela .lb{display:flex;justify-content:space-between;font-size:11.5px;color:#c9d3f2;margin-top:8px}
+.tela .ia{margin-top:12px;padding:10px 12px;border-radius:14px 14px 14px 4px;background:var(--card2);border:1px solid var(--linha);font-size:11.5px;color:#d7def5}
+.flut{position:absolute;padding:10px 14px;border-radius:14px;background:#fff;color:#0b1530;font-weight:800;font-size:13px;box-shadow:0 16px 40px rgba(0,0,0,.4);white-space:nowrap}
+/* seções */
+section{padding:70px 0}
+.cab{text-align:center;max-width:700px;margin:0 auto 38px}
+.cab .k{color:var(--ouro);font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.cab h2{font-size:34px;margin-top:10px}
+.cab p{color:var(--sub);margin-top:12px;font-size:17px}
+.alt{background:linear-gradient(180deg,var(--bg2),var(--bg))}
+.card{background:linear-gradient(180deg,var(--card),#0f1a38);border:1px solid var(--linha);border-radius:22px;padding:24px}
+/* prova */
+.prova{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch}
+.barras .b{margin-top:18px}
+.barras .b div{display:flex;justify-content:space-between;font-weight:700;font-size:15px;margin-bottom:8px}
+.barras .b div span{color:var(--sub);font-weight:600}
+.barras .t{height:16px;border-radius:10px;background:#0a1430;overflow:hidden}
+.barras .t i{display:block;height:100%;border-radius:10px}
+.areas{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.areas div{padding:14px;border-radius:14px;background:var(--card2);border:1px solid var(--linha);font-size:14px;font-weight:600}
+.areas div b{display:block;font-size:22px;margin-bottom:4px}
+/* corte */
+.corte{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:860px;margin:0 auto}
+.corte .card{border-color:rgba(239,68,68,.45);background:linear-gradient(180deg,#2a1020,#150d24);text-align:center}
+.corte .num{font-family:Sora;font-size:58px;font-weight:800;color:#fca5a5;line-height:1}
+.corte .num small{font-size:24px;color:#f8b4b4}
+.corte h3{margin-top:10px;font-size:19px}
+.corte p{color:#e5c3c8;font-size:15px;margin-top:8px}
+.alerta{max-width:860px;margin:22px auto 0;text-align:center;font-size:17px;color:#c9d3f2}
+.alerta b{color:var(--ouro2)}
+/* recursos */
+.rec{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.rec .card{transition:transform .2s,border-color .2s}
+.rec .card:hover{transform:translateY(-4px);border-color:rgba(245,184,46,.5)}
+.rec .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:27px;background:linear-gradient(135deg,rgba(245,184,46,.25),rgba(245,184,46,.06));border:1px solid rgba(245,184,46,.3)}
+.rec h3{font-size:18.5px;margin-top:14px}
+.rec p{color:var(--sub);font-size:15px;margin-top:8px}
+.rec .card.dest{border-color:rgba(245,184,46,.55);background:linear-gradient(180deg,#2a2210,#13183a)}
+.rec .card.dest .tag{display:inline-block;margin-top:12px;font-size:12px;font-weight:800;color:#1a1203;background:var(--ouro);padding:4px 10px;border-radius:999px}
+/* teste */
+.teste{max-width:720px;margin:0 auto}
+.teste .tg{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.3)}
+.teste .en{font-size:17px;font-weight:500;margin-top:14px;line-height:1.6}
+.alts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.op{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:14px;border-radius:14px;background:var(--card2);border:1.5px solid var(--linha);font-size:15.5px;transition:.15s}
+.op:hover{border-color:#3b5199}
+.op .l{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:13px;background:#0a1430;border:1px solid var(--linha)}
+.op.ok{border-color:var(--verde);background:rgba(34,197,94,.12)}.op.ok .l{background:var(--verde);color:#04210f}
+.op.err{border-color:var(--verm);background:rgba(239,68,68,.1)}.op.err .l{background:var(--verm);color:#fff}
+.expl{display:none;margin-top:16px;padding:16px;border-radius:14px;background:#0c1838;border:1px solid var(--linha);font-size:15px}
+.expl.on{display:block;animation:sobe .4s}
+@keyframes sobe{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* plano */
+.passos{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.passos .card{text-align:center;padding:22px 16px}
+.passos .n{width:44px;height:44px;margin:0 auto;border-radius:50%;display:grid;place-items:center;font-family:Sora;font-weight:800;background:var(--ouro);color:#1a1203}
+.passos h3{font-size:16px;margin-top:12px}
+.passos p{font-size:14px;color:var(--sub);margin-top:6px}
+/* oferta */
+.oferta{max-width:560px;margin:0 auto;text-align:center;border:2px solid var(--ouro);background:radial-gradient(120% 90% at 50% 0%,#2a2a5a,#0f1a38);box-shadow:0 30px 80px rgba(245,184,46,.15)}
+.oferta ul{list-style:none;text-align:left;margin:22px 0}
+.oferta li{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed var(--linha);font-size:15.5px}
+.oferta li:before{content:"✓";flex:none;width:22px;height:22px;border-radius:50%;background:var(--verde);color:#04210f;display:grid;place-items:center;font-weight:800;font-size:12px;margin-top:1px}
+.preco{font-family:Sora;font-weight:800;font-size:58px;line-height:1;color:var(--ouro2)}
+.preco small{font-size:22px;color:var(--txt)}
+.parc{color:var(--sub);margin-top:6px}
+.gar{display:flex;gap:14px;align-items:center;text-align:left;margin-top:22px;padding:16px;border-radius:16px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.35);font-size:14.5px}
+.gar b{font-size:34px}
+/* faq */
+.faq{max-width:760px;margin:0 auto}
+.faq details{border:1px solid var(--linha);border-radius:16px;background:var(--card);margin-top:10px;overflow:hidden}
+.faq summary{list-style:none;padding:18px 20px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:after{content:"+";color:var(--ouro);font-size:22px;line-height:1}
+.faq details[open] summary:after{content:"–"}
+.faq details p{padding:0 20px 18px;color:#c9d3f2;font-size:15px}
+footer{padding:40px 0 110px;text-align:center;color:var(--sub);font-size:13px;border-top:1px solid var(--linha)}
+.fixo{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(7,15,36,.92);backdrop-filter:blur(12px);border-top:1px solid var(--linha);display:none}
+.fixo .w{display:flex;align-items:center;gap:14px;justify-content:space-between;padding:0}
+.fixo .cta{padding:14px 20px;font-size:15.5px;animation:none;flex:1;max-width:340px}
+.fixo .txt{font-size:13px;color:var(--sub)}
+.fixo .txt b{display:block;color:var(--txt);font-size:15px}
+.video{max-width:420px;margin:0 auto;border-radius:24px;overflow:hidden;border:1px solid var(--linha);background:#000;aspect-ratio:9/16;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.video video{width:100%;height:100%;display:block;object-fit:cover}
+@media (max-width:860px){
+  .hero .w,.prova,.corte{grid-template-columns:1fr}
+  .hero{padding:30px 0 50px}
+  .hero h1{font-size:33px}
+  .hero p.l{font-size:17px}
+  .rec{grid-template-columns:1fr}
+  .passos{grid-template-columns:1fr 1fr}
+  .cab h2{font-size:27px}
+  section{padding:54px 0}
+  .cel{transform:none;width:280px}
+  .tela{height:540px}
+  .cta{width:100%}
+  .fixo{display:block}
+}
+</style>
+</head>
+<body>
+
+<div class="faixa">⏳ Prova em <b id="fxDias">—</b> · Domingo, 6 de dezembro · Banca Cesgranrio</div>
+
+<header class="hero"><div class="w">
+  <div>
+    <span class="selo">🎯 Transpetro · Nível Médio · Administração e Controle</span>
+    <h1>Você <em>passaria do corte</em> se a prova fosse hoje?</h1>
+    <p class="l">O <b>Mapa da Aprovação</b> é um app de reta final com <b>simulado real de 60 questões</b> que aplica as notas de corte do edital, <b>Professor IA</b> que tira suas dúvidas na hora e um <b>plano dia a dia</b> até 6/12.</p>
+    <div class="cont" id="contagem"></div>
+    <div style="margin-top:26px"><a class="cta chk" href="#oferta">Quero meu acesso agora →</a></div>
+    <div class="mini"><span>⚡ Acesso imediato</span><span>📱 Funciona no celular</span><span>🔒 Garantia de 7 dias</span></div>
+  </div>
+  <div style="position:relative;padding:20px 0">
+    <div class="cel"><div class="tela">
+      <div class="tp"><i>🗺️</i>Mapa da Aprovação</div>
+      <div class="res"><div style="font-size:11px;color:#c7d2fe">Resultado do simulado</div><div class="n">41<span style="font-size:18px;color:#9aa8cf">/60</span></div><span class="st">✅ Passaria das notas de corte</span></div>
+      <div class="ln"><span>Específicas (mín. 20)</span><b>28/40 ✅</b></div>
+      <div class="ln"><span>Português + Mat. (mín. 10)</span><b>13/20 ✅</b></div>
+      <div class="lb"><span>Logística</span><span>9/12</span></div><div class="br"><i style="width:75%"></i></div>
+      <div class="lb"><span>Finanças e Contab.</span><span>6/10</span></div><div class="br"><i style="width:60%"></i></div>
+      <div class="lb"><span>Processos Adm.</span><span>9/12</span></div><div class="br"><i style="width:75%"></i></div>
+      <div class="ia">🤖 <b style="color:#ffd66b">Professor IA:</b> No PEPS, o que entra primeiro sai primeiro. Então o estoque final fica com os custos mais recentes...</div>
+    </div></div>
+    <div class="flut" style="left:-6px;top:90px">⏱️ 4h cronometradas</div>
+    <div class="flut" style="right:-4px;bottom:120px">🤖 Tira dúvida na hora</div>
+  </div>
+</div></header>
+
+<section class="alt" id="video" style="display:none">
+  <div class="w"><div class="cab"><span class="k">Assista antes</span><h2>Entenda em 1 minuto</h2></div>
+  <div class="video"><video id="vsl" controls playsinline preload="metadata" poster=""></video></div></div>
+</section>
+
+<section><div class="w">
+  <div class="cab"><span class="k">Como é a prova</span><h2>60 questões. Mas 40 decidem tudo.</h2><p>Na ênfase Administração e Controle, a parte específica pesa o dobro das outras juntas.</p></div>
+  <div class="prova">
+    <div class="card barras">
+      <h3 style="font-size:19px">Distribuição das questões</h3>
+      <div class="b"><div>Conhecimentos Específicos <span>40</span></div><div class="t"><i style="width:100%;background:linear-gradient(90deg,var(--ouro),var(--ouro2))"></i></div></div>
+      <div class="b"><div>Língua Portuguesa <span>10</span></div><div class="t"><i style="width:25%;background:#3b82f6"></i></div></div>
+      <div class="b"><div>Matemática <span>10</span></div><div class="t"><i style="width:25%;background:#8b5cf6"></i></div></div>
+      <p style="color:var(--sub);font-size:14.5px;margin-top:20px">5 alternativas por questão · 4 horas de prova · banca Cesgranrio</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:19px">As 4 áreas das específicas</h3>
+      <div class="areas">
+        <div><b>💼</b>Processos administrativos e legislação</div>
+        <div><b>💰</b>Finanças e contabilidade</div>
+        <div><b>🚚</b>Logística e cadeia de suprimentos</div>
+        <div><b>💻</b>Noções de informática e LGPD</div>
+      </div>
+      <p style="color:var(--sub);font-size:14.5px;margin-top:16px">Inclui RH, SGI, manutenção, indicadores ESG, fluxo de caixa, DRE, estoques, modais, Lei 13.303 e Lei 14.133.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="alt"><div class="w">
+  <div class="cab"><span class="k" style="color:#fca5a5">O que mais elimina</span><h2>Dá pra ir bem na prova e mesmo assim ficar de fora</h2><p>O edital tem notas de corte separadas. Errou demais em uma parte, está fora — não importa a nota total.</p></div>
+  <div class="corte">
+    <div class="card"><div class="num">20<small>/40</small></div><h3>nas Específicas</h3><p>Quem acerta menos de 20 das 40 questões específicas está eliminado.</p></div>
+    <div class="card"><div class="num">10<small>/20</small></div><h3>em Português + Matemática</h3><p>Menos de 10 acertos nas 20 questões de conhecimentos gerais também elimina.</p></div>
+  </div>
+  <p class="alerta">A maioria estuda sem saber se está acima ou abaixo desses cortes. <b>O Mapa da Aprovação te mostra isso na hora.</b></p>
+</div></section>
+
+<section><div class="w">
+  <div class="cab"><span class="k">O que você recebe</span><h2>Tudo o que você precisa para a reta final, num app só</h2><p>Nada de apostila de 300 páginas. Só o que importa para os próximos dias.</p></div>
+  <div class="rec">
+    <div class="card dest"><div class="ic">🎯</div><h3>Simulado real</h3><p>60 questões no formato da prova, cronômetro de 4h e correção que aplica as notas de corte: você vê se passaria e em qual bloco está perdendo pontos.</p><span class="tag">MAIS USADO</span></div>
+    <div class="card dest"><div class="ic">🤖</div><h3>Professor IA</h3><p>Errou? Ele explica de outro jeito, com exemplo do dia a dia. Tira dúvida de lei, conta e conceito 24h e ainda cria exercícios extras no estilo da banca.</p><span class="tag">EXCLUSIVO</span></div>
+    <div class="card"><div class="ic">🧠</div><h3>Treino por assunto</h3><p>Questões inéditas no estilo Cesgranrio, separadas pelos blocos do edital, com explicação de cada alternativa. E um modo "Meus erros" para revisar só o que errou.</p></div>
+    <div class="card"><div class="ic">🗺️</div><h3>Mapa visual</h3><p>O essencial de cada bloco em poucos minutos: fórmulas, prazos das leis, atalhos e as pegadinhas mais comuns.</p></div>
+    <div class="card"><div class="ic">📅</div><h3>Plano até 6/12</h3><p>O que estudar em cada dia até a prova, com checklist. O app destaca o dia de hoje e mostra seu progresso.</p></div>
+    <div class="card"><div class="ic">⚡</div><h3>Revisão da véspera</h3><p>Flashcards com tudo que você precisa ter na ponta da língua: limites da Lei 13.303, fórmulas, LGPD, atalhos do Windows e mais.</p></div>
+  </div>
+</div></section>
+
+<section class="alt" id="teste"><div class="w">
+  <div class="cab"><span class="k">Teste agora, grátis</span><h2>Responda uma questão do app</h2><p>É assim que funciona o treino: você responde e já vê a explicação.</p></div>
+  <div class="card teste">
+    <span class="tg">Logística · Gestão de estoques</span>
+    <p class="en">Um item tem consumo médio de 20 unidades por dia, tempo de reposição de 5 dias e estoque de segurança de 40 unidades. O ponto de pedido é:</p>
+    <div class="alts" id="tAlts">
+      <button class="op" data-c="0"><span class="l">A</span><span>100 unidades</span></button>
+      <button class="op" data-c="0"><span class="l">B</span><span>120 unidades</span></button>
+      <button class="op" data-c="1"><span class="l">C</span><span>140 unidades</span></button>
+      <button class="op" data-c="0"><span class="l">D</span><span>60 unidades</span></button>
+      <button class="op" data-c="0"><span class="l">E</span><span>200 unidades</span></button>
+    </div>
+    <div class="expl" id="tExpl"><b id="tRes"></b><br>PP = consumo médio × tempo de reposição + estoque de segurança = 20 × 5 + 40 = <b>140</b>. Quando o estoque chegar a 140, faz-se o pedido.<br><br>No app você tem dezenas de questões assim, o simulado completo e o Professor IA para explicar de outro jeito.<div style="margin-top:16px"><a class="cta chk" href="#oferta">Liberar o app completo →</a></div></div>
+  </div>
+</div></section>
+
+<section><div class="w">
+  <div class="cab"><span class="k">Como funciona</span><h2>Do pagamento ao primeiro simulado em 2 minutos</h2></div>
+  <div class="passos">
+    <div class="card"><div class="n">1</div><h3>Garanta o acesso</h3><p>Pagamento por Pix ou cartão.</p></div>
+    <div class="card"><div class="n">2</div><h3>Receba o link</h3><p>Chega no seu e-mail na hora.</p></div>
+    <div class="card"><div class="n">3</div><h3>Faça o diagnóstico</h3><p>O simulado mostra onde você está.</p></div>
+    <div class="card"><div class="n">4</div><h3>Siga o plano</h3><p>Um passo por dia até 6/12.</p></div>
+  </div>
+</div></section>
+
+<section class="alt" id="oferta"><div class="w">
+  <div class="cab"><span class="k">Acesso completo</span><h2>Sua reta final, organizada</h2></div>
+  <div class="card oferta">
+    <span class="selo">🗺️ Mapa da Aprovação · Transpetro Adm. e Controle</span>
+    <ul>
+      <li>Simulado real de 60 questões com as notas de corte</li>
+      <li>Professor IA para tirar dúvidas e criar exercícios</li>
+      <li>Treino por assunto com explicação de cada questão</li>
+      <li>Modo "Meus erros" para revisar só o que errou</li>
+      <li>Mapa visual dos 6 blocos da prova</li>
+      <li>Plano dia a dia até 6 de dezembro</li>
+      <li>Flashcards da revisão da véspera</li>
+      <li>Novas questões adicionadas até a prova</li>
+    </ul>
+    <p style="color:var(--sub)">Pagamento único</p>
+    <div class="preco"><small>R$ </small>29,90</div>
+    <p class="parc">no Pix ou cartão · acesso imediato</p>
+    <a class="cta chk" href="#" style="margin-top:22px;width:100%">Quero o Mapa da Aprovação →</a>
+    <div class="gar"><b>🛡️</b><div><strong>Garantia de 7 dias.</strong> Se não gostar, peça o reembolso dentro de 7 dias e devolvemos 100% do valor.</div></div>
+  </div>
+</div></section>
+
+<section><div class="w">
+  <div class="cab"><span class="k">Dúvidas</span><h2>Perguntas frequentes</h2></div>
+  <div class="faq">
+    <details><summary>Serve para qual cargo?</summary><p>Para o Profissional Transpetro de Nível Médio – Ênfase Administração e Controle (Edital nº 03/2026.3), com prova objetiva em 6 de dezembro de 2026.</p></details>
+    <details><summary>É um PDF?</summary><p>Não. É um app que abre no navegador do celular ou do computador, sem instalar nada. Você faz o simulado, treina, conversa com o Professor IA e acompanha seu plano.</p></details>
+    <details><summary>As questões são de provas anteriores?</summary><p>São questões inéditas, escritas a partir do conteúdo programático do edital e no estilo de cobrança da Cesgranrio, com explicação de cada uma.</p></details>
+    <details><summary>Como recebo o acesso?</summary><p>Logo após a confirmação do pagamento você recebe no e-mail o link do app e o seu código de acesso.</p></details>
+    <details><summary>Ainda vale a pena faltando poucos dias?</summary><p>É exatamente para isso que ele foi feito: em vez de tentar ver tudo, você descobre onde está perdendo pontos e foca no que mais cai, com um plano para cada dia que resta.</p></details>
+    <details><summary>O Professor IA pode errar?</summary><p>Ele é uma ferramenta de apoio muito boa para explicar e treinar, mas, como toda IA, pode errar detalhes. Em caso de dúvida sobre lei ou regra da prova, confira sempre o texto oficial e o edital.</p></details>
+    <details><summary>Tem vínculo com a Transpetro ou com a Cesgranrio?</summary><p>Não. O Mapa da Aprovação é um material de estudo independente.</p></details>
+  </div>
+</div></section>
+
+<footer><div class="w">
+  <p><b style="color:var(--txt)">Mapa da Aprovação</b> · Material de estudo independente, sem vínculo com a Transpetro, a Petrobras ou a Fundação Cesgranrio.</p>
+  <p style="margin-top:8px">Não garantimos aprovação: o resultado depende da sua preparação. Confira sempre o edital oficial e o site da Cesgranrio.</p>
+</div></footer>
+
+<div class="fixo"><div class="w"><div class="txt"><b>R$ 29,90</b>acesso imediato</div><a class="cta chk" href="#oferta">Garantir acesso →</a></div></div>
+
+<script>
+const PROVA = new Date('2026-12-06T13:00:00-03:00');
+function cont(){
+  const ms = PROVA - new Date(); const d = Math.max(0, Math.floor(ms / 864e5)), h = Math.max(0, Math.floor(ms / 36e5) % 24), m = Math.max(0, Math.floor(ms / 6e4) % 60);
+  document.getElementById('contagem').innerHTML = `<div><b>${d}</b><span>dias</span></div><div><b>${h}</b><span>horas</span></div><div><b>${m}</b><span>min</span></div>`;
+  document.getElementById('fxDias').textContent = ms > 0 ? `${d} dia${d === 1 ? '' : 's'}` : 'hoje';
+}
+cont(); setInterval(cont, 30000);
+document.querySelectorAll('#tAlts .op').forEach(b => b.onclick = () => {
+  const ok = b.dataset.c === '1';
+  document.querySelectorAll('#tAlts .op').forEach(x => { x.disabled = true; if (x.dataset.c === '1') x.classList.add('ok'); });
+  if (!ok) b.classList.add('err');
+  document.getElementById('tRes').textContent = ok ? '✅ Acertou!' : '❌ Quase! A resposta é C.';
+  document.getElementById('tExpl').classList.add('on');
+});
+fetch('/api/mapa-config').then(r => r.json()).then(c => {
+  if (c.checkout) document.querySelectorAll('a.chk').forEach(a => { if (a.getAttribute('href') !== '#oferta' || a.closest('.oferta')) a.href = c.checkout; });
+  document.querySelectorAll('a.chk[href="#"]').forEach(a => a.href = c.checkout || '#oferta');
+  if (c.video) { document.getElementById('vsl').src = c.video; document.getElementById('video').style.display = ''; }
+}).catch(() => {});
+</script>
+</body>
+</html>

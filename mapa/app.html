@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1530">
+<meta name="robots" content="noindex">
+<title>Mapa da Aprovação · Área do aluno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070f24;--bg2:#0b1530;--card:#111d3d;--card2:#16244a;--linha:#22325e;--txt:#eef2ff;--sub:#9aa8cf;--ouro:#f5b82e;--ouro2:#ffd66b;--verde:#22c55e;--verm:#ef4444;--azul:#3b82f6;--r:18px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.5}
+body{min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+h1,h2,h3{font-family:Sora,Inter,sans-serif;letter-spacing:-.02em;line-height:1.2}
+.wrap{max-width:720px;margin:0 auto;padding:0 18px}
+/* topo */
+.topo{position:sticky;top:0;z-index:20;background:rgba(7,15,36,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--linha)}
+.topo .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
+.logo{display:flex;align-items:center;gap:10px;font-family:Sora;font-weight:800;font-size:17px}
+.logo i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--ouro2),var(--ouro));display:grid;place-items:center;font-style:normal;font-size:18px;box-shadow:0 6px 20px rgba(245,184,46,.35)}
+.logo small{display:block;font-family:Inter;font-weight:600;font-size:11px;color:var(--ouro);letter-spacing:.08em;text-transform:uppercase}
+.pill{background:var(--card2);border:1px solid var(--linha);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--ouro2);white-space:nowrap}
+/* nav */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(11,21,48,.96);backdrop-filter:blur(14px);border-top:1px solid var(--linha);padding-bottom:env(safe-area-inset-bottom)}
+.nav .wrap{display:grid;grid-template-columns:repeat(5,1fr);height:68px;padding:0 6px}
+.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--sub)}
+.nav button b{font-size:21px;line-height:1;filter:grayscale(1) opacity(.7);transition:.2s}
+.nav button.on{color:var(--ouro2)}
+.nav button.on b{filter:none;transform:translateY(-2px)}
+/* gerais */
+.tela{display:none;padding:22px 0 30px;animation:sobe .35s ease}
+.tela.on{display:block}
+@keyframes sobe{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card{background:linear-gradient(180deg,var(--card),#0f1a38);border:1px solid var(--linha);border-radius:var(--r);padding:18px}
+.mt{margin-top:14px}.mt2{margin-top:22px}
+.tit{font-size:22px;font-weight:800}
+.sub{color:var(--sub);font-size:14px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 18px;border-radius:14px;font-weight:800;font-size:16px;background:linear-gradient(135deg,var(--ouro2),var(--ouro));color:#1a1203;box-shadow:0 10px 28px rgba(245,184,46,.28);transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.btn.sec{background:var(--card2);color:var(--txt);box-shadow:none;border:1px solid var(--linha)}
+.btn.peq{width:auto;padding:10px 14px;font-size:14px;border-radius:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chip{padding:9px 14px;border-radius:999px;background:var(--card2);border:1px solid var(--linha);font-size:14px;font-weight:600;white-space:nowrap}
+.chip.on{background:var(--ouro);color:#1a1203;border-color:var(--ouro)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:22px;padding:22px;background:radial-gradient(120% 120% at 100% 0%,#2a3f86 0%,#0f1a3d 55%,#0b1530 100%);border:1px solid #2b3c72}
+.hero:after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(245,184,46,.35),transparent 70%)}
+.cont{display:flex;gap:10px;margin-top:16px}
+.cont div{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px;text-align:center}
+.cont b{display:block;font-family:Sora;font-size:26px;color:var(--ouro2)}
+.cont span{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em}
+.ferr{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:16px;background:var(--card);border:1px solid var(--linha);text-align:left;transition:.2s}
+.ferr:active{transform:scale(.98)}
+.ferr b{font-size:26px}
+.ferr strong{font-size:15px}
+.ferr small{color:var(--sub);font-size:12.5px;line-height:1.35}
+.barra{height:8px;border-radius:9px;background:#0a1430;overflow:hidden}
+.barra i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--ouro),var(--ouro2));transition:width .6s}
+.linhaE{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin:12px 0 6px}
+/* questão */
+.qtopo{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.tag{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.3)}
+.enun{font-size:16.5px;line-height:1.6;font-weight:500}
+.alts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.alt{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:14px;border-radius:14px;background:var(--card2);border:1.5px solid var(--linha);font-size:15px;line-height:1.45;transition:.15s}
+.alt .l{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:13px;background:#0a1430;border:1px solid var(--linha)}
+.alt.sel{border-color:var(--ouro);background:rgba(245,184,46,.1)}
+.alt.sel .l{background:var(--ouro);color:#1a1203;border-color:var(--ouro)}
+.alt.ok{border-color:var(--verde);background:rgba(34,197,94,.12)}
+.alt.ok .l{background:var(--verde);color:#04210f;border-color:var(--verde)}
+.alt.err{border-color:var(--verm);background:rgba(239,68,68,.1)}
+.alt.err .l{background:var(--verm);color:#fff;border-color:var(--verm)}
+.expl{margin-top:16px;padding:16px;border-radius:14px;background:#0c1838;border:1px solid var(--linha);font-size:14.5px}
+.expl h4{font-size:14px;margin-bottom:6px}
+.acoes{display:flex;gap:10px;margin-top:16px}
+.acoes .btn{flex:1}
+/* simulado */
+.relogio{font-family:Sora;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ouro2)}
+.mapaQ{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:12px}
+.mapaQ button{aspect-ratio:1;border-radius:8px;background:#0a1430;border:1px solid var(--linha);font-size:11.5px;font-weight:700;color:var(--sub)}
+.mapaQ button.resp{background:rgba(245,184,46,.18);color:var(--ouro2);border-color:rgba(245,184,46,.4)}
+.mapaQ button.atual{outline:2px solid var(--ouro2)}
+.mapaQ button.ok{background:rgba(34,197,94,.2);color:#86efac;border-color:rgba(34,197,94,.4)}
+.mapaQ button.err{background:rgba(239,68,68,.18);color:#fca5a5;border-color:rgba(239,68,68,.4)}
+.res{text-align:center;padding:26px 18px}
+.res .grande{font-family:Sora;font-size:54px;font-weight:800;color:var(--ouro2);line-height:1}
+.status{display:inline-flex;gap:8px;align-items:center;margin-top:14px;padding:9px 16px;border-radius:999px;font-weight:800;font-size:14px}
+.status.ok{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.4)}
+.status.err{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.4)}
+.corte{display:flex;justify-content:space-between;padding:14px;border-radius:14px;background:var(--card2);border:1px solid var(--linha);margin-top:10px;font-size:14.5px}
+.corte b{font-family:Sora}
+/* mapa */
+.bloco{border-radius:18px;overflow:hidden;border:1px solid var(--linha);background:var(--card);margin-top:12px}
+.bloco>button{display:flex;width:100%;align-items:center;gap:12px;padding:16px;text-align:left}
+.bloco .cor{width:12px;height:38px;border-radius:6px;flex:none}
+.bloco h3{font-size:16px}
+.bloco .pp{font-size:12px;color:var(--sub)}
+.bloco .seta{margin-left:auto;transition:.2s;color:var(--sub)}
+.bloco.aberto .seta{transform:rotate(180deg)}
+.bloco .corpo{display:none;padding:0 16px 16px}
+.bloco.aberto .corpo{display:block}
+.item{padding:12px 0;border-top:1px dashed var(--linha)}
+.item b{display:block;font-size:14px;color:var(--ouro2);margin-bottom:3px}
+.item p{font-size:14.5px;color:#d7def5}
+/* plano */
+.dia{display:flex;gap:14px;padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--linha);margin-top:10px}
+.dia.hoje{border-color:var(--ouro);box-shadow:0 0 0 1px var(--ouro) inset}
+.dia.feito{opacity:.6}
+.dia .data{flex:none;width:52px;text-align:center;border-radius:12px;background:#0a1430;padding:8px 0;height:max-content}
+.dia .data b{display:block;font-family:Sora;font-size:20px}
+.dia .data span{font-size:11px;color:var(--sub);text-transform:uppercase}
+.dia h4{font-size:15px;margin-bottom:6px}
+.tar{display:flex;gap:10px;align-items:flex-start;font-size:14px;padding:4px 0;text-align:left;width:100%}
+.tar i{flex:none;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--linha);display:grid;place-items:center;font-style:normal;font-size:12px;margin-top:1px}
+.tar.ok i{background:var(--verde);border-color:var(--verde);color:#04210f}
+.tar.ok span{text-decoration:line-through;color:var(--sub)}
+/* flash */
+.flash{perspective:1200px;height:300px;margin-top:16px}
+.flash .in{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.flash.vira .in{transform:rotateY(180deg)}
+.flash .f{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px;text-align:center;border:1px solid var(--linha)}
+.flash .frente{background:radial-gradient(120% 120% at 0% 0%,#253a7c,#111d3d)}
+.flash .verso{background:linear-gradient(135deg,#2b2108,#3d2e0a);border-color:rgba(245,184,46,.5);transform:rotateY(180deg)}
+.flash .f h3{font-size:22px}
+.flash .f p{font-size:18px;line-height:1.5;font-weight:600}
+.flash small{position:absolute;bottom:16px;color:var(--sub);font-size:12px}
+/* chat */
+.chat{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.msg{max-width:88%;padding:12px 14px;border-radius:16px;font-size:15px;line-height:1.55;white-space:pre-wrap}
+.msg.eu{align-self:flex-end;background:var(--ouro);color:#1a1203;border-bottom-right-radius:4px;font-weight:500}
+.msg.ia{align-self:flex-start;background:var(--card2);border:1px solid var(--linha);border-bottom-left-radius:4px}
+.msg.ia b{color:var(--ouro2)}
+.digitando{display:inline-flex;gap:4px}
+.digitando i{width:7px;height:7px;border-radius:50%;background:var(--sub);animation:pula 1s infinite}
+.digitando i:nth-child(2){animation-delay:.15s}.digitando i:nth-child(3){animation-delay:.3s}
+@keyframes pula{0%,60%,100%{transform:none;opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+.caixa{position:sticky;bottom:calc(76px + env(safe-area-inset-bottom));display:flex;gap:8px;margin-top:16px;padding:8px;background:var(--bg2);border:1px solid var(--linha);border-radius:18px}
+.caixa textarea{flex:1;resize:none;background:none;border:0;color:var(--txt);font:inherit;font-size:15px;padding:8px;outline:none;max-height:120px}
+.caixa button{width:46px;border-radius:12px;background:var(--ouro);color:#1a1203;font-size:20px;font-weight:800}
+/* gate */
+#gate{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(100% 80% at 50% 0%,#1d2d63,#070f24)}
+#gate .card{max-width:400px;width:100%;text-align:center;padding:28px 22px}
+#gate input{width:100%;margin-top:18px;padding:15px;border-radius:14px;background:#0a1430;border:1.5px solid var(--linha);color:var(--txt);font:inherit;font-size:17px;text-align:center;letter-spacing:.12em;text-transform:uppercase;outline:none}
+#gate input:focus{border-color:var(--ouro)}
+.erro{color:#fca5a5;font-size:14px;margin-top:10px;min-height:20px}
+.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:60;background:#fff;color:#0b1530;font-weight:700;padding:12px 18px;border-radius:14px;font-size:14px;transition:.3s;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.aviso{font-size:12px;color:var(--sub);text-align:center;margin-top:22px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div id="gate" style="display:none">
+  <div class="card">
+    <div class="logo" style="justify-content:center"><i>🗺️</i><div>Mapa da Aprovação<small>Transpetro · Adm. e Controle</small></div></div>
+    <h2 class="mt2" style="font-size:20px">Digite seu código de acesso</h2>
+    <p class="sub mt">Ele está no e-mail de confirmação da sua compra.</p>
+    <input id="codigo" placeholder="TP••••••••••" autocomplete="off" maxlength="20">
+    <div class="erro" id="gateErro"></div>
+    <button class="btn mt" id="entrar">Entrar no app</button>
+  </div>
+</div>
+
+<header class="topo"><div class="wrap">
+  <div class="logo"><i>🗺️</i><div>Mapa da Aprovação<small>Transpetro · Adm. e Controle</small></div></div>
+  <span class="pill" id="pillDias">⏳</span>
+</div></header>
+
+<main class="wrap">
+
+<!-- INÍCIO -->
+<section class="tela on" id="t-inicio">
+  <div class="hero">
+    <p class="sub" style="color:#c7d2fe">Prova objetiva · Cesgranrio</p>
+    <h1 class="tit" style="font-size:26px;margin-top:4px">Domingo, 6 de dezembro</h1>
+    <div class="cont" id="contagem"></div>
+  </div>
+
+  <div class="card mt" id="cardHoje"></div>
+
+  <div class="grid2 mt">
+    <button class="ferr" data-ir="simulado"><b>🎯</b><strong>Simulado real</strong><small>60 questões, 4h e as notas de corte do edital</small></button>
+    <button class="ferr" data-ir="treino"><b>🧠</b><strong>Treino por assunto</strong><small>Corrige na hora e explica cada questão</small></button>
+    <button class="ferr" data-ir="ia"><b>🤖</b><strong>Professor IA</strong><small>Tire qualquer dúvida, a qualquer hora</small></button>
+    <button class="ferr" data-ir="mapa"><b>🗺️</b><strong>Mapa visual</strong><small>O que mais cai em cada bloco</small></button>
+    <button class="ferr" data-ir="plano"><b>📅</b><strong>Plano até a prova</strong><small>O que estudar em cada dia</small></button>
+    <button class="ferr" data-ir="flash"><b>⚡</b><strong>Revisão da véspera</strong><small>Flashcards do que tem que decorar</small></button>
+  </div>
+
+  <div class="card mt">
+    <h3 style="font-size:17px">Seu desempenho</h3>
+    <p class="sub">Atualiza conforme você treina e faz simulados.</p>
+    <div id="desemp"></div>
+  </div>
+
+  <div class="card mt" style="border-color:rgba(245,184,46,.4)">
+    <h3 style="font-size:16px">⚠️ As duas regras que mais eliminam</h3>
+    <div class="corte"><span>Conhecimentos Específicos</span><b>mín. 20 de 40</b></div>
+    <div class="corte"><span>Português + Matemática</span><b>mín. 10 de 20</b></div>
+    <p class="sub mt">Por isso o plano prioriza as específicas. Confira sempre o edital oficial.</p>
+  </div>
+  <p class="aviso">Material de estudo independente, sem vínculo com a Transpetro ou com a Fundação Cesgranrio.<br>Questões inéditas elaboradas a partir do conteúdo programático do edital.</p>
+</section>
+
+<!-- SIMULADO -->
+<section class="tela" id="t-simulado"></section>
+
+<!-- TREINO -->
+<section class="tela" id="t-treino">
+  <h2 class="tit">Treino por assunto</h2>
+  <p class="sub">Escolha um bloco. Cada resposta é corrigida na hora, com explicação.</p>
+  <div class="chips mt" id="chipsTreino"></div>
+  <div class="card mt" id="caixaTreino"></div>
+</section>
+
+<!-- MAPA -->
+<section class="tela" id="t-mapa">
+  <h2 class="tit">Mapa visual</h2>
+  <p class="sub">O essencial de cada bloco, para revisar em minutos.</p>
+  <div id="blocos"></div>
+</section>
+
+<!-- PLANO -->
+<section class="tela" id="t-plano">
+  <h2 class="tit">Plano até a prova</h2>
+  <p class="sub">Marque as tarefas conforme for fazendo. O dia de hoje fica em destaque.</p>
+  <div class="card mt"><div class="linhaE"><span>Progresso do plano</span><b id="planoPct">0%</b></div><div class="barra"><i id="planoBarra" style="width:0"></i></div></div>
+  <div id="dias"></div>
+</section>
+
+<!-- FLASH -->
+<section class="tela" id="t-flash">
+  <h2 class="tit">Revisão da véspera</h2>
+  <p class="sub">Toque no cartão para virar. Marque se já sabe ou se precisa revisar.</p>
+  <div class="chips mt"><button class="chip on" data-fm="todos">Todos</button><button class="chip" data-fm="revisar">Para revisar</button></div>
+  <div class="flash" id="flash"><div class="in"><div class="f frente"><h3 id="fF"></h3><small>toque para ver a resposta</small></div><div class="f verso"><p id="fV"></p><small id="fN"></small></div></div></div>
+  <div class="acoes"><button class="btn sec" id="fRev">🔁 Revisar</button><button class="btn" id="fSei">✅ Já sei</button></div>
+</section>
+
+<!-- IA -->
+<section class="tela" id="t-ia">
+  <h2 class="tit">Professor IA</h2>
+  <p class="sub">Pergunte qualquer coisa do conteúdo. Ele explica passo a passo e cria exercícios.</p>
+  <div class="chips mt" id="sugestoes"></div>
+  <div class="chat" id="chat"></div>
+  <div class="caixa"><textarea id="pergunta" rows="1" placeholder="Ex.: me explica PEPS com um exemplo"></textarea><button id="enviar">➤</button></div>
+</section>
+
+</main>
+
+<nav class="nav"><div class="wrap">
+  <button data-ir="inicio" class="on"><b>🏠</b>Início</button>
+  <button data-ir="simulado"><b>🎯</b>Simulado</button>
+  <button data-ir="treino"><b>🧠</b>Treino</button>
+  <button data-ir="mapa"><b>🗺️</b>Mapa</button>
+  <button data-ir="ia"><b>🤖</b>Professor</button>
+</div></nav>
+<div class="toast" id="toast"></div>
+
+<script>
+const PROVA = new Date('2026-12-06T13:00:00-03:00');
+const AREAS = {pt:'Português', mat:'Matemática', adm:'Processos Adm.', fin:'Finanças e Contab.', log:'Logística', inf:'Informática'};
+const DIST = {pt:10, mat:10, adm:12, fin:10, log:12, inf:6};
+const L = 'ABCDE';
+let D = null, CH = '';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ls = { get(k, d){ try { const v = localStorage.getItem('mapa_' + k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v){ try { localStorage.setItem('mapa_' + k, JSON.stringify(v)); } catch {} } };
+const area = q => q.b || q.a;
+const embaralha = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function toast(t){ const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove('on'), 2200); }
+
+// ── acesso ──
+async function carregar(codigo){
+  const r = await fetch('/api/mapa?k=' + encodeURIComponent(codigo));
+  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).erro || 'Código inválido');
+  return r.json();
+}
+async function iniciar(){
+  const url = new URL(location.href);
+  let c = url.searchParams.get('acesso') || ls.get('codigo', '');
+  if (url.searchParams.get('acesso')) { url.searchParams.delete('acesso'); history.replaceState(null, '', url.pathname); }
+  if (!c) return abrirGate();
+  try { D = await carregar(c); CH = c; ls.set('codigo', c); montar(); }
+  catch (e) { abrirGate(e.message); }
+}
+function abrirGate(msg){ $('#gate').style.display = 'flex'; $('#gateErro').textContent = msg && msg !== 'Código inválido' ? msg : ''; }
+$('#entrar').onclick = async () => {
+  const c = $('#codigo').value.trim().toUpperCase();
+  if (!c) return;
+  $('#entrar').textContent = 'Entrando...';
+  try { D = await carregar(c); CH = c; ls.set('codigo', c); $('#gate').style.display = 'none'; montar(); }
+  catch (e) { $('#gateErro').textContent = 'Código não encontrado. Confira no e-mail da compra.'; }
+  $('#entrar').textContent = 'Entrar no app';
+};
+$('#codigo').onkeydown = e => { if (e.key === 'Enter') $('#entrar').click(); };
+
+// ── navegação ──
+function ir(t){
+  document.querySelectorAll('.tela').forEach(s => s.classList.toggle('on', s.id === 't-' + t));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('on', b.dataset.ir === t));
+  scrollTo({top: 0, behavior: 'smooth'});
+  if (t === 'inicio') telaInicio();
+  if (t === 'simulado') telaSimulado();
+  if (t === 'plano') telaPlano();
+  if (t === 'flash') mostraFlash();
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-ir]'); if (b) ir(b.dataset.ir); });
+
+// ── estatísticas ──
+function registra(q, acertou){
+  const s = ls.get('stats', {});
+  const k = area(q); s[k] = s[k] || {f:0, a:0}; s[k].f++; if (acertou) s[k].a++;
+  ls.set('stats', s);
+  const er = new Set(ls.get('erros', []));
+  acertou ? er.delete(q.id) : er.add(q.id);
+  ls.set('erros', [...er]);
+}
+
+// ── INÍCIO ──
+function contagem(){
+  const ms = PROVA - new Date();
+  const d = Math.max(0, Math.floor(ms / 864e5)), h = Math.max(0, Math.floor(ms / 36e5) % 24), m = Math.max(0, Math.floor(ms / 6e4) % 60);
+  $('#contagem').innerHTML = `<div><b>${d}</b><span>dias</span></div><div><b>${h}</b><span>horas</span></div><div><b>${m}</b><span>min</span></div>`;
+  $('#pillDias').textContent = ms > 0 ? `⏳ ${d} dia${d === 1 ? '' : 's'}` : '🍀 Boa prova!';
+}
+function hojeISO(){ const d = new Date(); return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); }
+function telaInicio(){
+  contagem();
+  const hoje = hojeISO();
+  const p = D.plano.find(x => x.d === hoje) || D.plano.find(x => x.d > hoje) || D.plano[D.plano.length - 1];
+  const feitas = ls.get('plano', {});
+  $('#cardHoje').innerHTML = `<p class="sub">${p.d === hoje ? '📌 Hoje no seu plano' : '📌 Próximo dia do plano'}</p><h3 style="font-size:19px;margin:4px 0 10px">${esc(p.titulo)}</h3>` +
+    p.tarefas.map((t, i) => `<div class="tar ${feitas[p.d + i] ? 'ok' : ''}"><i>${feitas[p.d + i] ? '✓' : ''}</i><span>${esc(t)}</span></div>`).join('') +
+    `<button class="btn sec mt" data-ir="plano">Ver plano completo</button>`;
+  const s = ls.get('stats', {});
+  const tot = Object.values(s).reduce((a, x) => ({f: a.f + x.f, a: a.a + x.a}), {f:0, a:0});
+  const ult = ls.get('ultimoSim', null);
+  $('#desemp').innerHTML = (tot.f ? `<div class="grid2 mt"><div class="corte" style="flex-direction:column;margin:0"><span class="sub">Questões feitas</span><b style="font-size:24px">${tot.f}</b></div><div class="corte" style="flex-direction:column;margin:0"><span class="sub">Acerto geral</span><b style="font-size:24px;color:var(--ouro2)">${Math.round(tot.a / tot.f * 100)}%</b></div></div>` : '<p class="mt" style="font-size:14px">Você ainda não respondeu questões. Comece pelo <b>Simulado</b> para descobrir seu nível. 👇</p>') +
+    Object.keys(AREAS).map(k => { const x = s[k]; const pct = x && x.f ? Math.round(x.a / x.f * 100) : 0; return `<div class="linhaE"><span>${AREAS[k]}</span><b>${x && x.f ? pct + '%' : '—'}</b></div><div class="barra"><i style="width:${pct}%"></i></div>`; }).join('') +
+    (ult ? `<p class="sub mt">Último simulado: <b style="color:var(--txt)">${ult.total}/60</b> em ${new Date(ult.em).toLocaleDateString('pt-BR')}</p>` : '');
+}
+
+// ── SIMULADO ──
+let SIM = null, simTimer = null;
+function novoSimulado(){
+  let qs = [];
+  for (const [k, n] of Object.entries(DIST)) qs = qs.concat(embaralha(D.questoes.filter(q => area(q) === k)).slice(0, n));
+  // ordem da prova: específicas primeiro? Na Cesgranrio os blocos vêm separados; aqui: Português, Matemática, Específicas
+  return { ids: qs.map(q => q.id), ordem: qs.map(() => embaralha([0,1,2,3,4])), resp: {}, i: 0, inicio: Date.now(), fim: null };
+}
+const qPorId = id => D.questoes.find(q => q.id === id);
+function telaSimulado(){
+  clearInterval(simTimer);
+  SIM = ls.get('sim', null);
+  const el = $('#t-simulado');
+  if (SIM && !SIM.fim) return rodaSimulado();
+  if (SIM && SIM.fim) return resultadoSimulado();
+  el.innerHTML = `<h2 class="tit">Simulado real</h2><p class="sub">No formato exato da prova de Administração e Controle.</p>
+  <div class="card mt">
+    <div class="corte" style="margin-top:0"><span>📝 Questões</span><b>60</b></div>
+    <div class="corte"><span>🇧🇷 Língua Portuguesa</span><b>10</b></div>
+    <div class="corte"><span>➗ Matemática</span><b>10</b></div>
+    <div class="corte"><span>💼 Conhecimentos Específicos</span><b>40</b></div>
+    <div class="corte"><span>⏱️ Tempo</span><b>4 horas</b></div>
+  </div>
+  <div class="card mt" style="border-color:rgba(245,184,46,.4)"><p style="font-size:14.5px">No final, o app aplica as <b>regras de corte</b> e mostra se você passaria: mínimo de <b>20 de 40</b> nas específicas e <b>10 de 20</b> em Português + Matemática.</p></div>
+  <p class="sub mt">Dica: dá para pausar e continuar depois — o cronômetro segue contando, como na prova.</p>
+  <button class="btn mt2" id="comecaSim">Começar simulado</button>`;
+  $('#comecaSim').onclick = () => { SIM = novoSimulado(); ls.set('sim', SIM); rodaSimulado(); };
+}
+function fmtTempo(ms){ ms = Math.max(0, ms); const h = Math.floor(ms / 36e5), m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60; return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+function rodaSimulado(){
+  const el = $('#t-simulado');
+  const q = qPorId(SIM.ids[SIM.i]), ord = SIM.ordem[SIM.i], r = SIM.resp[SIM.i];
+  const nResp = Object.keys(SIM.resp).length;
+  el.innerHTML = `<div class="card" style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center"><span class="sub">Respondidas <b style="color:var(--txt)">${nResp}/60</b></span><span class="relogio" id="relogio"></span></div>
+  <div class="card mt">
+    <div class="qtopo"><span class="tag">${AREAS[area(q)]} · ${esc(q.t)}</span><b class="sub">Questão ${SIM.i + 1}</b></div>
+    <p class="enun">${esc(q.q)}</p>
+    <div class="alts">${ord.map((oi, k) => `<button class="alt ${r === k ? 'sel' : ''}" data-k="${k}"><span class="l">${L[k]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>
+    <div class="acoes"><button class="btn sec" id="ant" ${SIM.i === 0 ? 'disabled style="opacity:.4"' : ''}>← Anterior</button><button class="btn" id="prox">${SIM.i === 59 ? 'Revisar' : 'Próxima →'}</button></div>
+  </div>
+  <div class="card mt"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:14px">Folha de respostas</b><button class="btn peq sec" id="entregar">Entregar prova</button></div>
+  <div class="mapaQ">${SIM.ids.map((_, i) => `<button data-q="${i}" class="${SIM.resp[i] != null ? 'resp' : ''} ${i === SIM.i ? 'atual' : ''}">${i + 1}</button>`).join('')}</div>
+  <p class="sub mt" style="font-size:12.5px">1–10 Português · 11–20 Matemática · 21–60 Específicas</p></div>`;
+  el.querySelectorAll('.alt').forEach(b => b.onclick = () => { SIM.resp[SIM.i] = +b.dataset.k; ls.set('sim', SIM); rodaSimulado(); });
+  el.querySelectorAll('.mapaQ button').forEach(b => b.onclick = () => { SIM.i = +b.dataset.q; ls.set('sim', SIM); rodaSimulado(); });
+  $('#ant').onclick = () => { if (SIM.i > 0) { SIM.i--; ls.set('sim', SIM); rodaSimulado(); } };
+  $('#prox').onclick = () => { if (SIM.i < 59) { SIM.i++; ls.set('sim', SIM); rodaSimulado(); } else document.querySelector('.mapaQ').scrollIntoView({behavior:'smooth'}); };
+  $('#entregar').onclick = () => { const f = 60 - Object.keys(SIM.resp).length; if (confirmar(f)) entregar(); };
+  const tick = () => { const resta = 4 * 36e5 - (Date.now() - SIM.inicio); const e = $('#relogio'); if (e) e.textContent = '⏱️ ' + fmtTempo(resta); if (resta <= 0) { toast('Tempo esgotado!'); entregar(); } };
+  clearInterval(simTimer); simTimer = setInterval(tick, 1000); tick();
+}
+function confirmar(faltam){
+  if (!faltam) return true;
+  const b = $('#entregar');
+  if (b.dataset.conf) return true;
+  b.dataset.conf = 1; b.textContent = `Faltam ${faltam}. Entregar mesmo?`; b.style.background = 'var(--verm)'; b.style.color = '#fff';
+  setTimeout(() => { if (b.isConnected) { delete b.dataset.conf; b.textContent = 'Entregar prova'; b.style.background = ''; b.style.color = ''; } }, 4000);
+  return false;
+}
+function corrige(){
+  const porArea = {}; let gerais = 0, esp = 0;
+  SIM.ids.forEach((id, i) => { const q = qPorId(id); const ok = SIM.resp[i] != null && SIM.ordem[i][SIM.resp[i]] === q.c; const k = area(q); porArea[k] = porArea[k] || {a:0, n:0}; porArea[k].n++; if (ok) { porArea[k].a++; q.a === 'esp' ? esp++ : gerais++; } });
+  return { porArea, gerais, esp, total: gerais + esp };
+}
+function entregar(){
+  clearInterval(simTimer);
+  SIM.fim = Date.now();
+  SIM.ids.forEach((id, i) => { const q = qPorId(id); registra(q, SIM.resp[i] != null && SIM.ordem[i][SIM.resp[i]] === q.c); });
+  const c = corrige();
+  ls.set('sim', SIM); ls.set('ultimoSim', {total: c.total, em: SIM.fim});
+  resultadoSimulado();
+}
+function resultadoSimulado(){
+  const el = $('#t-simulado'); const c = corrige();
+  const passaE = c.esp >= 20, passaG = c.gerais >= 10;
+  const passa = passaE && passaG;
+  el.innerHTML = `<div class="card res"><p class="sub">Seu resultado</p><div class="grande">${c.total}<span style="font-size:22px;color:var(--sub)">/60</span></div><p class="sub mt">Tempo: ${fmtTempo(SIM.fim - SIM.inicio)}</p>
+  <div class="status ${passa ? 'ok' : 'err'}">${passa ? '✅ Você passaria das notas de corte' : '❌ Você seria eliminado neste simulado'}</div></div>
+  <div class="card mt">
+    <div class="corte" style="margin-top:0;border-color:${passaE ? 'rgba(34,197,94,.5)' : 'rgba(239,68,68,.5)'}"><span>Específicas (mín. 20)</span><b>${c.esp}/40 ${passaE ? '✅' : '❌'}</b></div>
+    <div class="corte" style="border-color:${passaG ? 'rgba(34,197,94,.5)' : 'rgba(239,68,68,.5)'}"><span>Português + Matemática (mín. 10)</span><b>${c.gerais}/20 ${passaG ? '✅' : '❌'}</b></div>
+  </div>
+  <div class="card mt"><h3 style="font-size:16px">Por bloco</h3>${Object.keys(AREAS).map(k => { const x = c.porArea[k] || {a:0, n:0}; const pct = x.n ? Math.round(x.a / x.n * 100) : 0; return `<div class="linhaE"><span>${AREAS[k]}</span><b>${x.a}/${x.n}</b></div><div class="barra"><i style="width:${pct}%;${pct < 50 ? 'background:var(--verm)' : ''}"></i></div>`; }).join('')}
+  <p class="sub mt">Blocos em vermelho: foque neles no <b>Treino</b> e pergunte ao <b>Professor IA</b>.</p></div>
+  <div class="card mt"><b style="font-size:14px">Correção — toque para ver a explicação</b><div class="mapaQ">${SIM.ids.map((id, i) => { const ok = SIM.resp[i] != null && SIM.ordem[i][SIM.resp[i]] === qPorId(id).c; return `<button data-q="${i}" class="${ok ? 'ok' : 'err'}">${i + 1}</button>`; }).join('')}</div></div>
+  <div id="revQ"></div>
+  <button class="btn mt2" id="novoSim">Fazer novo simulado</button>`;
+  el.querySelectorAll('.mapaQ button').forEach(b => b.onclick = () => revisaQ(+b.dataset.q));
+  $('#novoSim').onclick = () => { ls.set('sim', null); telaSimulado(); };
+}
+function revisaQ(i){
+  const q = qPorId(SIM.ids[i]), ord = SIM.ordem[i], r = SIM.resp[i];
+  const box = $('#revQ');
+  box.innerHTML = `<div class="card mt"><div class="qtopo"><span class="tag">${AREAS[area(q)]} · ${esc(q.t)}</span><b class="sub">Questão ${i + 1}</b></div><p class="enun">${esc(q.q)}</p>
+  <div class="alts">${ord.map((oi, k) => `<div class="alt ${oi === q.c ? 'ok' : (r === k ? 'err' : '')}"><span class="l">${L[k]}</span><span>${esc(q.o[oi])}</span></div>`).join('')}</div>
+  <div class="expl"><h4>💡 Explicação</h4>${esc(q.e)}</div>${r == null ? '<p class="sub mt">Você deixou em branco.</p>' : ''}
+  <button class="btn sec mt" id="iaRev">🤖 Explicar de outro jeito com o Professor IA</button></div>`;
+  $('#iaRev').onclick = () => perguntaSobre(q);
+  box.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ── TREINO ──
+let TR = { area: 'adm', fila: [], atual: null, ord: null, resp: null };
+function chipsTreino(){
+  const er = ls.get('erros', []);
+  const op = [['adm','💼 Processos Adm.'],['fin','💰 Finanças'],['log','🚚 Logística'],['inf','💻 Informática'],['pt','🇧🇷 Português'],['mat','➗ Matemática'],['erros',`🔁 Meus erros (${er.length})`]];
+  $('#chipsTreino').innerHTML = op.map(([k, n]) => `<button class="chip ${TR.area === k ? 'on' : ''}" data-ta="${k}">${n}</button>`).join('');
+  $('#chipsTreino').querySelectorAll('.chip').forEach(b => b.onclick = () => { TR.area = b.dataset.ta; TR.fila = []; chipsTreino(); proxTreino(); });
+}
+function proxTreino(){
+  if (!TR.fila.length) {
+    const er = ls.get('erros', []);
+    const base = TR.area === 'erros' ? D.questoes.filter(q => er.includes(q.id)) : D.questoes.filter(q => area(q) === TR.area);
+    TR.fila = embaralha(base.map(q => q.id));
+  }
+  const box = $('#caixaTreino');
+  if (!TR.fila.length) { box.innerHTML = `<div class="res"><div style="font-size:44px">🎉</div><h3 class="mt">Nenhum erro para revisar!</h3><p class="sub mt">Faça um simulado ou treine outro bloco.</p></div>`; return; }
+  TR.atual = qPorId(TR.fila.shift()); TR.ord = embaralha([0,1,2,3,4]); TR.resp = null;
+  desenhaTreino();
+}
+function desenhaTreino(){
+  const q = TR.atual, box = $('#caixaTreino'), resp = TR.resp != null;
+  box.innerHTML = `<div class="qtopo"><span class="tag">${AREAS[area(q)]} · ${esc(q.t)}</span></div><p class="enun">${esc(q.q)}</p>
+  <div class="alts">${TR.ord.map((oi, k) => `<button class="alt ${resp ? (oi === q.c ? 'ok' : (TR.resp === k ? 'err' : '')) : ''}" data-k="${k}" ${resp ? 'disabled' : ''}><span class="l">${L[k]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>
+  ${resp ? `<div class="expl"><h4>${TR.ord[TR.resp] === q.c ? '✅ Acertou!' : '❌ Não foi dessa vez'}</h4>${esc(q.e)}</div>
+  <div class="acoes"><button class="btn sec" id="trIA">🤖 Explicar</button><button class="btn" id="trProx">Próxima →</button></div>` : ''}`;
+  if (!resp) box.querySelectorAll('.alt').forEach(b => b.onclick = () => { TR.resp = +b.dataset.k; registra(q, TR.ord[TR.resp] === q.c); desenhaTreino(); if (TR.area === 'erros') chipsTreino(); });
+  else { $('#trProx').onclick = () => { proxTreino(); box.scrollIntoView({behavior:'smooth', block:'start'}); }; $('#trIA').onclick = () => perguntaSobre(q); }
+}
+
+// ── MAPA ──
+function telaMapa(){
+  $('#blocos').innerHTML = D.mapa.map((m, i) => `<div class="bloco ${i === 0 ? 'aberto' : ''}"><button><span class="cor" style="background:${m.cor}"></span><div><h3>${esc(m.titulo)}</h3><span class="pp">${esc(m.peso)}</span></div><span class="seta">▾</span></button>
+  <div class="corpo">${m.itens.map(([t, p]) => `<div class="item"><b>${esc(t)}</b><p>${esc(p)}</p></div>`).join('')}<button class="btn sec mt" data-treinar="${m.b}">Treinar este bloco</button></div></div>`).join('');
+  $('#blocos').querySelectorAll('.bloco>button').forEach(b => b.onclick = () => b.parentElement.classList.toggle('aberto'));
+  $('#blocos').querySelectorAll('[data-treinar]').forEach(b => b.onclick = () => { TR.area = b.dataset.treinar; TR.fila = []; chipsTreino(); proxTreino(); ir('treino'); });
+}
+
+// ── PLANO ──
+function telaPlano(){
+  const hoje = hojeISO(), f = ls.get('plano', {});
+  let tot = 0, ok = 0;
+  $('#dias').innerHTML = D.plano.map(p => {
+    const dt = new Date(p.d + 'T12:00:00'); const todas = p.tarefas.every((_, i) => f[p.d + i]);
+    p.tarefas.forEach((_, i) => { tot++; if (f[p.d + i]) ok++; });
+    return `<div class="dia ${p.d === hoje ? 'hoje' : ''} ${todas ? 'feito' : ''}" ${p.d === hoje ? 'id="diaHoje"' : ''}><div class="data"><b>${dt.getDate()}</b><span>${dt.toLocaleDateString('pt-BR', {month:'short'}).replace('.', '')}</span></div><div style="flex:1"><h4>${p.d === hoje ? '👉 ' : ''}${esc(p.titulo)}</h4>${p.tarefas.map((t, i) => `<button class="tar ${f[p.d + i] ? 'ok' : ''}" data-t="${p.d + i}"><i>${f[p.d + i] ? '✓' : ''}</i><span>${esc(t)}</span></button>`).join('')}</div></div>`;
+  }).join('');
+  const pct = tot ? Math.round(ok / tot * 100) : 0;
+  $('#planoPct').textContent = pct + '%'; $('#planoBarra').style.width = pct + '%';
+  $('#dias').querySelectorAll('.tar').forEach(b => b.onclick = () => { const f = ls.get('plano', {}); f[b.dataset.t] = !f[b.dataset.t]; ls.set('plano', f); telaPlano(); });
+  const h = $('#diaHoje'); if (h) setTimeout(() => h.scrollIntoView({behavior:'smooth', block:'center'}), 200);
+}
+
+// ── FLASH ──
+let FM = 'todos', FI = 0;
+function listaFlash(){ const rev = ls.get('revisar', null); if (FM === 'revisar' && rev) return D.flash.map((f, i) => i).filter(i => rev.includes(i)); return D.flash.map((f, i) => i); }
+function mostraFlash(){
+  const l = listaFlash(); const card = $('#flash'); card.classList.remove('vira');
+  if (!l.length) { $('#fF').textContent = 'Tudo revisado! 🎉'; $('#fV').textContent = 'Volte em "Todos" para ver de novo.'; $('#fN').textContent = ''; return; }
+  FI = FI % l.length; const [f, v] = D.flash[l[FI]];
+  setTimeout(() => { $('#fF').textContent = f; $('#fV').textContent = v; $('#fN').textContent = `${FI + 1} de ${l.length}`; }, 150);
+}
+$('#flash').onclick = () => $('#flash').classList.toggle('vira');
+function marcaFlash(rev){
+  const l = listaFlash(); if (!l.length) return;
+  const r = new Set(ls.get('revisar', [])); rev ? r.add(l[FI]) : r.delete(l[FI]); ls.set('revisar', [...r]);
+  if (FM === 'revisar' && !rev) { mostraFlash(); return; }
+  FI++; mostraFlash();
+}
+$('#fRev').onclick = () => marcaFlash(true);
+$('#fSei').onclick = () => marcaFlash(false);
+document.querySelectorAll('[data-fm]').forEach(b => b.onclick = () => { FM = b.dataset.fm; FI = 0; document.querySelectorAll('[data-fm]').forEach(x => x.classList.toggle('on', x === b)); mostraFlash(); });
+
+// ── PROFESSOR IA ──
+const SUG = ['Me explica PEPS com um exemplo', 'Cria 3 questões de Lei 13.303', 'Diferença entre fluxo de caixa direto e indireto', 'Como calcular ponto de pedido?', 'Dicas para a prova da Cesgranrio', 'Quando usar crase?'];
+function formata(t){ return esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/^#+\s*(.+)$/gm, '<b>$1</b>').replace(/^\s*[-*]\s+/gm, '• '); }
+function addMsg(quem, html){ const d = document.createElement('div'); d.className = 'msg ' + quem; d.innerHTML = html; $('#chat').appendChild(d); d.scrollIntoView({behavior:'smooth', block:'end'}); return d; }
+let ctxIA = null;
+async function enviar(texto){
+  texto = (texto || $('#pergunta').value).trim(); if (!texto) return;
+  $('#pergunta').value = '';
+  addMsg('eu', esc(texto));
+  const d = addMsg('ia', '<span class="digitando"><i></i><i></i><i></i></span>');
+  try {
+    const r = await fetch('/api/mapa', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({k: CH, pergunta: texto, ctx: ctxIA})});
+    const j = await r.json();
+    d.innerHTML = r.ok ? formata(j.resposta) : '⚠️ ' + esc(j.erro || 'Tente de novo.');
+  } catch { d.innerHTML = '⚠️ Sem conexão. Tente de novo.'; }
+  ctxIA = null;
+  d.scrollIntoView({behavior:'smooth', block:'end'});
+}
+function perguntaSobre(q){
+  ctxIA = `Questão: ${q.q}\nAlternativas: ${q.o.map((o, i) => L[i] + ') ' + o).join(' | ')}\nGabarito: ${L[q.c]}) ${q.o[q.c]}\nExplicação do material: ${q.e}`;
+  ir('ia');
+  enviar(`Me explica essa questão de ${AREAS[area(q)]} (${q.t}) de um jeito mais simples, com um exemplo do dia a dia.`);
+}
+$('#enviar').onclick = () => enviar();
+$('#pergunta').onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); } };
+
+function montar(){
+  $('#gate').style.display = 'none';
+  $('#sugestoes').innerHTML = SUG.map(s => `<button class="chip">${esc(s)}</button>`).join('');
+  $('#sugestoes').querySelectorAll('.chip').forEach(b => b.onclick = () => enviar(b.textContent));
+  if (!$('#chat').children.length) addMsg('ia', 'Olá! 👋 Sou o seu <b>Professor IA</b>. Pergunte qualquer coisa da prova: leis, contabilidade, logística, Excel, crase... Também crio exercícios extras no estilo Cesgranrio.');
+  chipsTreino(); proxTreino(); telaMapa(); telaInicio();
+  setInterval(contagem, 30000);
+}
+iniciar();
+</script>
+</body>
+</html>
